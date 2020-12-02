@@ -24,9 +24,14 @@ from numpy import savetxt as save_txt
 # - 2) Customised Libraries:
 
 # Import images_as_matrix,
-# From the TP2_Aux Custom Python Library,
+# From the TP2_Aux Customised Python Library,
 # as images_as_matrix
 from tp2_aux import images_as_matrix as images_as_numpy_matrix
+
+# Import report_clusters,
+# From the TP2_Aux Customised Python Library,
+# as html_report_cluster_labels
+from tp2_aux import report_clusters as html_report_cluster_labels
 
 
 
@@ -52,11 +57,42 @@ from sklearn.manifold import Isomap as isometric_mapping
 
 
 
-# - 4) Clustering Methods' Libraries:
+# TODO - Confirmar
+# Import Function Classifier,
+# From the Feature Selection Module
+# of the SciKit-Learn's Python Library,
+# as function_classifier
+from sklearn.feature_selection import f_classif as f_classifier
+
+
+# - 5) Clustering Methods' Libraries:
 
 # Import cluster.KMeans Sub-Module,
 # from SciKit-Learn Python's Library as k_means
 from sklearn.cluster import KMeans as k_means
+
+# Import cluster.DBSCAN Sub-Module,
+# from SciKit-Learn Python's Library as dbscan
+from sklearn.cluster import DBSCAN as dbscan
+
+
+
+# - 6) Scoring/Metrics' Libraries:
+
+# Import cluster.KMeans Sub-Module,
+# from SciKit-Learn Python's Library as k_means
+from sklearn.metrics import adjusted_rand_score as skl_adjusted_rand_score
+
+# Import cluster.DBSCAN Sub-Module,
+# from SciKit-Learn Python's Library as dbscan
+from sklearn.metrics import silhouette_score as skl_silhouette_score
+
+
+
+# -------------------------------------------------------------------#
+
+
+NUM_FEATURES_COMPONENTS = 6
 
 
 # -------------------------------------------------------------------#
@@ -88,14 +124,16 @@ xs_ids = ids_and_labels[:,0]
 
 # The Identifiers for the samples of Staphycoccus Aureus,
 # provided by Super-Resolution Fluorescence Microscopy Photographies,
-# which are not labelled
-ids_not_labelled_data = ids_and_labels[ys_labels == 0]
+# which are not labelled (Label 0)
+xs_ids_not_labelled_data = xs_ids[ys_labels == 0]
 
 # The Identifiers for the samples of Staphycoccus Aureus,
 # provided by Super-Resolution Fluorescence Microscopy Photographies
-# which are labelled
-ids_labelled_data = ids_and_labels[ys_labels != 0]
+# which are labelled (Labels 1, 2, 3 for Celular Phases 1, 2, 3, respectively)
+xs_ids_labelled_data = xs_ids[ys_labels != 0]
 
+
+# TODO - Juntar tudo numa tabela, xs da matriz da imagem com os ys das labels ???
 
 
 # For each method of Features Extraction
@@ -104,7 +142,14 @@ ids_labelled_data = ids_and_labels[ys_labels != 0]
 # - 1) PCA (Principal Component Analysis) Decomposition;
 # - 2) TSNE (T-Distributed Stochastic Neighbor Embedding);
 # - 3) Isomap (Isometric Mapping);
-pca = pca_decomposition(n_components = 6)
+pca = pca_decomposition(n_components = NUM_FEATURES_COMPONENTS)
+
+
+# TODO - confirmar components = features ???
+tsne = t_distributed_stochastic_neighbor_embedding(n_components = NUM_FEATURES_COMPONENTS)
+
+
+isomap = isometric_mapping(n_components = 6)
 
 
 # Fit the PCA (Principal Component Analysis) Decomposition,
@@ -112,6 +157,44 @@ pca = pca_decomposition(n_components = 6)
 pca.fit(xs_images_matrix)
 
 
-transformed_xs_images_matrix = pca.transform(xs_images_matrix)
+transformed_xs_images_matrix_pca = pca.transform(xs_images_matrix)
 
 
+transformed_xs_images_matrix_tsne = tsne.fit_transform(xs_images_matrix)
+
+
+transformed_xs_images_matrix_isomap = isomap.fit_transform(xs_images_matrix)
+
+
+# k clusters
+k = 10
+
+# e distancia de vizinhanca
+e = 10
+
+for num_clusters in range(k):
+
+
+    
+    
+    k_means_clustering = k_means(num_clusters)
+            
+    k_means_clustering.fit(xs_images_matrix)
+    
+    k_means_clustering_predicted_clusters_labels = k_means_clustering.predict(xs_images_matrix)
+    
+    centroids = k_means_clustering.cluster_centers_
+    
+    # TODO - como variar a distancia da vizinhanca e ????        
+    for neighborhood_distance in range(e):
+    
+    
+        # Confirmar se é para usar todas as labels ou so labels diferentes de 0 (c/ fase atribuida)
+        skl_adjusted_rand_score(ys_labels, k_means_clustering_predicted_clusters_labels)        
+        
+        skl_silhouette_score(xs_images_matrix)
+        
+        dbscan(algorithm=...)
+        
+        
+        
