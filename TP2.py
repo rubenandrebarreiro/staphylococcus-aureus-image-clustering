@@ -6,7 +6,10 @@
 
 """
 
-# Libraries:
+# -------------------------------------------------------------------#
+
+
+# Libraries Used:
 
 # - 1) General Libraries:
 
@@ -18,8 +21,16 @@ from numpy import loadtxt as load_txt
 from numpy import savetxt as save_txt
 
 
+# - 2) Customised Libraries:
 
-# - 2) Libraries for Features Extraction:
+# Import images_as_matrix,
+# From the TP2_Aux Custom Python Library,
+# as images_as_matrix
+from tp2_aux import images_as_matrix as images_as_numpy_matrix
+
+
+
+# - 3) Libraries for Features Extraction:
 
 # Import PCA,
 # From the Decomposition Module,
@@ -40,12 +51,15 @@ from sklearn.manifold import TSNE as t_distributed_stochastic_neighbor_embedding
 from sklearn.manifold import Isomap as isometric_mapping 
 
 
-# - 3) Customised Libraries:
 
-# Import images_as_matrix,
-# From the TP2_Aux Custom Python Library,
-# as images_as_matrix
-from tp2_aux import images_as_matrix as images_as_numpy_matrix
+# - 4) Clustering Methods' Libraries:
+
+# Import cluster.KMeans Sub-Module,
+# from SciKit-Learn Python's Library as k_means
+from sklearn.cluster import KMeans as k_means
+
+
+# -------------------------------------------------------------------#
 
 
 # The 2D NumPy Matrix, representing all the samples images,
