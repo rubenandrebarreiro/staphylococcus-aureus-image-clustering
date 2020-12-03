@@ -24,12 +24,6 @@ from numpy import loadtxt as load_txt
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
 
-# Import shuffle,
-# From the SciPy's Python Library,
-# as random_shuffle
-from scipy import shuffle as random_shuffle
-
-
 # - 2) Customised Libraries:
 
 # Import images_as_matrix,
@@ -64,13 +58,20 @@ from sklearn.manifold import TSNE as t_distributed_stochastic_neighbor_embedding
 from sklearn.manifold import Isomap as isometric_mapping 
 
 
-# - 4) Libraries for Scoring Performance:
+# - 4) Features' Selection and Scoring Performances' Libraries:
 
 # Import Function Classifier,
 # From the Feature Selection Module
 # of the SciKit-Learn's Python Library,
 # as f_1_score
 from sklearn.feature_selection import f_classif as f_1_score
+
+
+# Import Select K Best,
+# From the Feature Selection Module
+# of the SciKit-Learn's Python Library,
+# as select_k_best_features
+from sklearn.feature_selection import SelectKBest as select_k_best_features
 
 
 # - 5) Clustering Methods' Libraries:
@@ -105,7 +106,13 @@ from sklearn.metrics import silhouette_score as skl_silhouette_score
 
 # B) CONSTANTS:
     
+# The number of features/components to be extracted,
+# from each Features' Extraction method
 NUM_FEATURES_COMPONENTS = 6
+
+# The threshold for the selection of the prior Best Features,
+# from the F-Values, given by the F-Test (F1 Score)
+f_value_threshold = 10.0
 
 
 # -------------------------------------------------------------------#
@@ -155,6 +162,12 @@ xs_ids_not_labelled_data = xs_ids[ys_labels == 0]
 # which are labelled (Labels 1, 2, 3 for Celular Phases 1, 2, 3, respectively)
 xs_ids_labelled_data = xs_ids[ys_labels != 0]
 
+
+
+
+print("\n\n-----Image matrix Features----")
+print(xs_images_matrix)
+print("-----Image matrix Features----\n\n")
 
 
 # Step 2:
@@ -212,7 +225,59 @@ xs_features[:, NUM_FEATURES_COMPONENTS : ( 2 * NUM_FEATURES_COMPONENTS ) ] = tra
 xs_features[:, ( 2 * NUM_FEATURES_COMPONENTS ) : ( 3 * NUM_FEATURES_COMPONENTS ) ] = transformed_xs_images_matrix_isomap
 
 
+# Step 2:
+# - Select the best features, based on a predefined threshold;
 
+# Select the F-Values and the Probabilities, from the F-Test (F1 Score)
+f_values, probabilities_f_values = f_1_score(xs_features, ys_labels)
+
+
+print("\n\n")
+print(f_values)
+print("\n\n")
+print(probabilities_f_values)
+print("\n\n")
+
+
+# The K Best Features, from the F-Values, given by the F-Test (F1 Score)
+best_features_priori_indexes = []
+
+# For all the indexes of the F-Values, given by the F-Test (F1 Score)
+for current_feature_index in range( len(f_values) ):
+
+    # If the current F-Value is higher than 10,
+    # this feature will be considered
+    if( f_values[current_feature_index] >= f_value_threshold ):
+        
+        # Append the current index of the Feature
+        best_features_priori_indexes.append(current_feature_index)
+
+
+print(best_features_priori_indexes)
+
+num_best_features_priori_indexes = len(best_features_priori_indexes)
+
+xs_best_features_priori = matrix_array_zeros( ( num_total_images_examples, num_best_features_priori_indexes ) )
+
+print("\n\n-----18 Features----")
+print(xs_features)
+print("-----18 Features----\n\n")
+
+
+# For all the indexes of the K piori Best Features selected previously
+for current_xs_best_features_priori_index in range(num_best_features_priori_indexes):
+    
+    # Select the K Best Features, from the initial Features extracted    
+    xs_best_features_priori[:, current_xs_best_features_priori_index] = xs_features[:, best_features_priori_indexes[current_xs_best_features_priori_index]]
+    
+
+print("\n\n-----K Best Features----")
+print(xs_best_features_priori)
+print("-----K Best Features----\n\n")
+
+    
+
+"""
 # Step 2:
 # - Process of Clustering;
 
@@ -245,6 +310,6 @@ for num_clusters in range(k):
         dbscan(algorithm=...)
         
 
-
+"""
 
 # -------------------------------------------------------------------#
