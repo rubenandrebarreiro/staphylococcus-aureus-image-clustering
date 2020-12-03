@@ -13,6 +13,7 @@
 
 # - 1) General Libraries:
 
+    
 # Import loadtxt,
 # From the NumPy's Python Library,
 # as load_txt
@@ -22,6 +23,11 @@ from numpy import loadtxt as load_txt
 # From the NumPy's Python Library,
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
+
+# Import shuffle,
+# From the SciPy's Python Library,
+# as random_shuffle
+from scipy import shuffle as random_shuffle
 
 
 # - 2) Customised Libraries:
@@ -80,7 +86,6 @@ from sklearn.cluster import KMeans as k_means
 from sklearn.cluster import DBSCAN as dbscan
 
 
-
 # - 6) Scoring/Metrics' Libraries:
 
 # Import cluster.KMeans Sub-Module,
@@ -108,11 +113,12 @@ NUM_FEATURES_COMPONENTS = 6
 
 # C) PROGRAM:
 
+
     
 # Step 1:
 # - Initialise the global variables and prepare the data;
 
-  
+
 # The 2D NumPy Matrix, representing all the samples images,
 # with an image per row (563 lines),
 # and one indiviual pixel by column
@@ -120,7 +126,7 @@ NUM_FEATURES_COMPONENTS = 6
 xs_images_matrix = images_as_numpy_matrix()
 
 
-# The Total Number of Images/Examples
+# The Total Number of Images/Examples (Samples)
 num_total_images_examples = len(xs_images_matrix)
 
 
@@ -128,7 +134,7 @@ num_total_images_examples = len(xs_images_matrix)
 # the Examples and their Celular Phases of
 # the samples of Staphycoccus Aureus,
 # provided by Super-Resolution Fluorescence Microscopy Photographies
-ids_and_labels = load_txt("labels.txt", delimiter=",")
+ids_and_labels = load_txt("labels.txt", delimiter = ",")
 
 # The Labels for the Celular Phases of the samples of Staphycoccus Aureus,
 # provided by Super-Resolution Fluorescence Microscopy Photographies
