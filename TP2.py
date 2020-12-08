@@ -27,6 +27,14 @@ from libs.visualization_and_plotting import generate_analysis_plots
 from libs.visualization_and_plotting import plot_elbow_method
 
 
+from libs.performance_scoring_metrics import f_1_measure_score
+
+from libs.performance_scoring_metrics import silhouette_score
+
+from libs.performance_scoring_metrics import f_1_measure_score
+
+
+
 from k_means_clustering import k_means_pre_clustering_method
 
 from k_means_clustering import k_means_final_clustering
@@ -92,11 +100,11 @@ from sklearn.manifold import Isomap as isometric_mapping
 
 # - 4) Features' Selection and Scoring Performances' Libraries:
 
-# Import Function Classifier,
+# Import F Classifier,
 # From the Feature Selection Module
 # of the SciKit-Learn's Python Library,
 # as f_1_score
-from sklearn.feature_selection import f_classif as f_1_score
+from sklearn.feature_selection import f_classif as f_1_score    
 
 # Import Select K Best,
 # From the Feature Selection Module
@@ -111,21 +119,6 @@ from sklearn.feature_selection import SelectKBest as select_k_best_features
 # from SciKit-Learn Python's Library,
 # as dbscan
 from sklearn.cluster import DBSCAN as dbscan
-
-
-# - 6) Scoring/Metrics' Libraries:
-
-# Import cluster.KMeans Sub-Module,
-# from SciKit-Learn Python's Library,
-# as k_means
-from sklearn.metrics import adjusted_rand_score as skl_adjusted_rand_score
-
-# Import cluster.DBSCAN Sub-Module,
-# from SciKit-Learn Python's Library,
-# as dbscan
-from sklearn.metrics import silhouette_score as skl_silhouette_score
-
-
 
 
 # -------------------------------------------------------------------#
@@ -254,7 +247,7 @@ xs_features[:, ( 2 * NUM_FEATURES_COMPONENTS ) : ( 3 * NUM_FEATURES_COMPONENTS )
 # Step 2:
 # - Select the best features, based on a predefined threshold;
 # Select the F-Values and the Probabilities, from the F-Test (F1 Score)
-f_values, probabilities_f_values = f_1_score(xs_features, ys_labels_true)
+f_values, probabilities_f_values = f_1_measure_score(xs_features, ys_labels_true)
 
 
 print("\n\n")

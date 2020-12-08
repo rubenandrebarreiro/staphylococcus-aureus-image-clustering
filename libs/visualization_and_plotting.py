@@ -20,11 +20,10 @@ from matplotlib import patches as matplotlib_patches
 # as subtract_nums
 from numpy import subtract as subtract_numbers
 
-# Import zeros,
+# Import arange,
 # From the NumPy's Python Library,
-# as matrix_array_zeros
-from numpy import zeros as matrix_array_zeros
-
+# as a_range
+from numpy import arange as a_range
 
 # Import LinearAlgebra.Norm Sub-Module,
 # From NumPy Python's Library,
@@ -35,6 +34,14 @@ from numpy.linalg import norm as norm_number
 # From Pandas Python's Library,
 # as pandas_plot
 from pandas import plotting as pandas_plot
+
+
+from libs.performance_scoring_metrics import silhouette_score
+
+# Import metrics.silhouette_samples Sub-Module,
+# from SciKit-Learn Python's Library,
+# as skl_silhouette_samples
+from sklearn.metrics import silhouette_samples as skl_silhouette_samples
 
 
 COLORS_MATPLOTLIB = ['red', 'darkorange', 'goldenrod', 'yellow', 'lawngreen', 'forestgreen', 'turquoise', 'teal', 'deepskyblue', 'midnightblue', 'blue', 'darkviolet', 'magenta', 'pink']
@@ -279,27 +286,26 @@ def build_clusters_centroids_and_radii(xs_features_data, ys_labels_k_means_clust
     return clusters_centroids, clusters_radii
 
 
-def plot_clusters_centroids_and_radii(xs_features_data, ys_labels, k_means_estimator_centroids, num_clusters, final_clustering = False):
+def plot_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, final_clustering = False):
     
     figure, ax = py_plot.subplots(1, figsize = (12,8) )
     
-    # Set the Title of the K-Means Clustering, for K Clusters
-    py_plot.title( 'K-Means Clustering, for K = {} Cluster(s)'.format(num_clusters) )
+    py_plot.xlabel("Feature Space for the 1st Feature")
+    py_plot.ylabel("Feature Space for the 2nd Feature")
+    
+    clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, k_means_estimator_centroids)
     
     
-    clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels, k_means_estimator_centroids)
+    for current_cluster_i in range(num_clusters):
     
-    
-    for num_cluster in range(num_clusters):
-    
-        patch = matplotlib_patches.Circle(clusters_centroids[num_cluster], clusters_radii[num_cluster], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[num_cluster], fill = True, alpha = 0.125)
-        ax.add_patch(patch)
+        patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125)
+        ax.add_patch(patch_cluster_area)
         
         # Plot the Data (xs Points), as Scatter Points
-        py_plot.scatter(xs_features_data[ys_labels == num_cluster, 0], xs_features_data[ys_labels == num_cluster, 1], color = COLORS_MATPLOTLIB[num_cluster], s = 100, label = "Cluster #{}".format(num_cluster))
+        py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Cluster #{}".format(current_cluster_i))
         
         # Plot the Centroids of the Clusters, as Scatter Points
-        py_plot.scatter(k_means_estimator_centroids[num_cluster][0], k_means_estimator_centroids[num_cluster, 1], marker = 'D', s = 200, color = 'black')
+        py_plot.scatter(k_means_estimator_centroids[current_cluster_i][0], k_means_estimator_centroids[current_cluster_i, 1], marker = 'D', s = 100, color = 'black')
         
     
     
@@ -308,12 +314,18 @@ def plot_clusters_centroids_and_radii(xs_features_data, ys_labels, k_means_estim
     # from the Elbow Method 
     if(final_clustering):
    
+        # Set the Title of the K-Means Clustering, for K Clusters
+        py_plot.title( 'Final/Best K-Means Clustering, with K = {} Cluster(s)'.format(num_clusters) )           
+    
         # Save the Plot, as a figure/image
         py_plot.savefig( 'imgs/plots/final-k-means-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
 
     # If it is varying the pre K-Means Clustering,
     # with the a certain K for the number of Clusters
     else:
+   
+        # Set the Title of the K-Means Clustering, for K Clusters
+        py_plot.title( 'K-Means Clustering, with K = {} Cluster(s)'.format(num_clusters) )     
         
         # Save the Plot, as a figure/image
         py_plot.savefig( 'imgs/plots/pre-k-means-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
@@ -324,4 +336,102 @@ def plot_clusters_centroids_and_radii(xs_features_data, ys_labels, k_means_estim
 
     # Close the Plot
     py_plot.close()
+
+
+def plot_silhouette_analysis(xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, final_clustering = False):
     
+    # Create a subplot with 1 row and 2 columns
+    fig, (ax1, ax2) = py_plot.subplots(1, 2)
+    
+    fig.set_size_inches(18, 8)
+
+    # The 1st subplot is the silhouette plot
+    # The silhouette coefficient can range from -1, 1 but in this example all
+    # lie within [-0.1, 1]
+    ax1.set_xlim([-0.1, 1])
+    
+    # The (n_clusters+1)*10 is for inserting blank space between silhouette
+    # plots of individual clusters, to demarcate them clearly.
+    ax1.set_ylim([0, len(xs_features_data) + (num_clusters + 1) * 10])
+
+    # The silhouette_score gives the average value for all the samples.
+    # This gives a perspective into the density and separation of the formed
+    # clusters
+    silhouette_score_average = silhouette_score(xs_features_data, ys_labels_predicted)
+
+    # Compute the silhouette scores for each sample
+    sample_silhouette_values = skl_silhouette_samples(xs_features_data, ys_labels_predicted)
+    
+    
+    clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, k_means_estimator_centroids)
+    
+
+    y_lower = 10
+    
+    for current_cluster_i in range(num_clusters):
+        
+        patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125)
+        ax2.add_patch(patch_cluster_area)
+    
+        ax2.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 30, label = "Cluster #{}".format(current_cluster_i))    
+    
+        # Aggregate the silhouette scores for samples belonging to
+        # cluster i, and sort them
+        ith_cluster_silhouette_values = sample_silhouette_values[ys_labels_predicted == current_cluster_i]
+
+        ith_cluster_silhouette_values.sort()
+
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        color = COLORS_MATPLOTLIB[current_cluster_i]
+        
+        ax1.fill_betweenx(a_range(y_lower, y_upper), 0, ith_cluster_silhouette_values, facecolor = color, edgecolor = color, alpha = 0.75)
+
+        # Label the silhouette plots with their cluster numbers at the middle
+        ax1.text( -0.05, ( y_lower + ( 0.5 * size_cluster_i ) ), str(current_cluster_i) )
+
+        # Compute the new y_lower for next plot
+        y_lower = ( y_upper + 10 ) # 10 for the 0 samples
+
+    ax1.set_title("The Silhouette Plot for the several Clusters")
+    ax1.set_xlabel("The Silhouette Coefficient Values")
+    ax1.set_ylabel("Cluster Number (Label)")
+
+    # The vertical line for average silhouette score of all the values
+    ax1.axvline(x = silhouette_score_average, color = "black", linestyle = "--")
+
+    ax1.set_yticks([])  # Clear the yaxis labels / ticks
+    ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])    
+
+    # Draw white circles at cluster centers
+    ax2.scatter(k_means_estimator_centroids[:, 0], k_means_estimator_centroids[:, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'k')
+
+    for num_cluster_centroid, cluster_centroid in enumerate(k_means_estimator_centroids):
+        ax2.scatter( cluster_centroid[0], cluster_centroid[1], marker = ( '$%d$' % num_cluster_centroid ), alpha = 1, s = 50, edgecolor = 'black' )
+
+    ax2.set_title("The Visualization of the Clustered Data")
+    ax2.set_xlabel("Feature Space for the 1st Feature")
+    ax2.set_ylabel("Feature Space for the 2nd Feature")
+
+    if(final_clustering):
+
+        py_plot.suptitle( "Final/Best Silhouette Analysis for K-Means Clustering, on Sample Data, with K = {} Cluster(s)".format(num_clusters), fontsize = 14, fontweight = 'bold' )
+
+        # Save the Plot, as a figure/image
+        py_plot.savefig( 'imgs/plots/final-silhouette-analysis/silhouette-analysis-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
+
+        
+    else:
+        
+        py_plot.suptitle( "Silhouette Analysis for K-Means Clustering, on Sample Data, with K = {} Cluster(s)".format(num_clusters), fontsize = 14, fontweight = 'bold' )
+
+        # Save the Plot, as a figure/image
+        py_plot.savefig( 'imgs/plots/pre-silhouette-analysis/silhouette-analysis-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
+    
+
+    # Show the Plot
+    py_plot.show()
+
+    # Close the Plot
+    py_plot.close()

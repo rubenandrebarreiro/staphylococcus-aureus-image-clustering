@@ -13,6 +13,7 @@ from sklearn.cluster import KMeans as k_means
 
 from libs.visualization_and_plotting import plot_clusters_centroids_and_radii
 
+from libs.visualization_and_plotting import plot_silhouette_analysis
 
 def k_means_clustering_method(xs_features_data, num_clusters):
     
@@ -44,6 +45,10 @@ def k_means_pre_clustering_method(xs_features_data, num_max_clusters):
                 
         plot_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = num_clusters, final_clustering = False)
         
+        if(num_clusters > 1):
+            
+            plot_silhouette_analysis(xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters, final_clustering = False)
+        
         #Silhouette score
         #silhouette_score = silhouette_score(normalized, labels)
        
@@ -67,7 +72,13 @@ def k_means_final_clustering(xs_features_data, num_clusters = 3):
     
     ys_labels_predicted, clusters_centroids, error_k_means_final_clustering = k_means_clustering_method(xs_features_data, num_clusters)
     
+    
     plot_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = num_clusters, final_clustering = True)
+    
+    
+    if(num_clusters > 1):
+            
+            plot_silhouette_analysis(xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters, final_clustering = True)
     
     
     return error_k_means_final_clustering
