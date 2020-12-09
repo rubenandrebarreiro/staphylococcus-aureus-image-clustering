@@ -32,7 +32,7 @@ from k_means_clustering import k_means_pre_clustering_method
 from k_means_clustering import k_means_final_clustering
 
 
-#from dbscan_clustering import dbscan_pre_clustering_method
+from dbscan_clustering import dbscan_pre_clustering_method
 
 #from dbscan_clustering import dbscan_final_clustering_method
 
@@ -325,8 +325,6 @@ error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_bes
 
 # ---- DBScan Clustering ----
 
-#epsilon_max_value = 0
-
-#errors_k_means_pre_clustering = dbscan_pre_clustering_method(normalized_data_xs_best_features_priori, epsilon_max_value)
+dbscan_pre_clustering_method(normalized_data_xs_best_features_priori, epsilon_max = 2)
 
 # ---- DBScan Clustering ----
