@@ -325,6 +325,6 @@ error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_bes
 
 # ---- DBScan Clustering ----
 
-dbscan_pre_clustering_method(normalized_data_xs_best_features_priori, epsilon_max = 2)
+dbscan_pre_clustering_method(normalized_data_xs_best_features_priori, epsilon_max = 2.0)
 
 # ---- DBScan Clustering ----

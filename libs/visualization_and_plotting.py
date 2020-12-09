@@ -276,6 +276,37 @@ def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_m
     py_plot.close()
     
     return xs_points, ys_points
+
+
+def plot_k_distance_method(clustering_algorithm, points_distances, start_epsilon = 0.01, step_epsilon = 0.01, max_epsilon = 2.0):
+    
+    # The xs data points ( Epsilons )
+    xs_points = a_range( 0.001, ( max_epsilon + 0.001 ), step_epsilon )
+    
+    # The ys data points ( Distances )
+    ys_points = points_distances
+    
+    # Plot the xs data points ( Epsilons ) and
+    # their respective ys data points ( Distances )
+    py_plot.plot(xs_points, ys_points)
+    
+    # Set the Title of the Elbow Method Plot
+    py_plot.title( 'K-Distance Method for {} Clustering'.format(clustering_algorithm) )
+    
+    # Set the label for the X axis of the Plot
+    py_plot.xlabel('Data Points Sorted by Distance')
+    
+    # Set the label for the Y axis of the Plot
+    py_plot.ylabel('ε (Epsilon Value)')
+        
+    # Save the Plot, as a figure/image
+    py_plot.savefig( 'imgs/plots/k-distance-method/{}-clustering-elbow-method-for-max-of-{}-clusters.png'.format(clustering_algorithm.lower(), max_epsilon), dpi = 600, bbox_inches = 'tight' )
+
+    # Show the Plot
+    py_plot.show()
+
+    # Close the Plot
+    py_plot.close()
     
 
 def build_clusters_centroids_and_radii(xs_features_data, ys_labels_k_means_clusters, k_means_estimator_centroids):
