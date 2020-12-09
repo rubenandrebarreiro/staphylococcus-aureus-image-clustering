@@ -25,6 +25,11 @@ from numpy import subtract as subtract_numbers
 # as a_range
 from numpy import arange as a_range
 
+# Import Array,
+# From the NumPy's Python Library,
+# as array_matrix
+from numpy import array as array_matrix
+
 # Import LinearAlgebra.Norm Sub-Module,
 # From NumPy Python's Library,
 # as norm_number
@@ -36,7 +41,7 @@ from numpy.linalg import norm as norm_number
 from pandas import plotting as pandas_plot
 
 
-from libs.performance_scoring_metrics import silhouette_score
+from libs.performance_scoring_metrics import compute_silhouette_score
 
 # Import metrics.silhouette_samples Sub-Module,
 # from SciKit-Learn Python's Library,
@@ -240,10 +245,10 @@ def generate_analysis_plots(data_frame_transformed_extraction_pca, data_frame_co
     plot_andrews_curves(data_frame_transformed_extraction_isomap, "Isomap", num_components = num_components)
     
 
-def plot_elbow_method(errors_k_means_clustering, num_max_clusters = 10):
+def plot_elbow_method(clustering_algorithm, errors_k_means_clustering, num_max_clusters = 12):
     
     # The xs data points ( Number of Clusters )
-    xs_points = range( 1, (num_max_clusters + 1) )
+    xs_points = range( 1, ( num_max_clusters + 1 ) )
     
     # The ys data points ( Errors (Sums of Squared Errors) )
     ys_points = errors_k_means_clustering
@@ -253,7 +258,7 @@ def plot_elbow_method(errors_k_means_clustering, num_max_clusters = 10):
     py_plot.plot(xs_points, ys_points)
     
     # Set the Title of the Elbow Method Plot
-    py_plot.title('Elbow Method for K-Means Clustering')
+    py_plot.title( 'Elbow Method for {} Clustering'.format(clustering_algorithm) )
     
     # Set the label for the X axis of the Plot
     py_plot.xlabel('Number of Clusters')
@@ -262,7 +267,7 @@ def plot_elbow_method(errors_k_means_clustering, num_max_clusters = 10):
     py_plot.ylabel('Errors (Sums of Squared Errors)')
         
     # Save the Plot, as a figure/image
-    py_plot.savefig( 'imgs/plots/elbow-method/elbow-method-k-means-clustering-for-max-of-{}-clusters.png'.format(num_max_clusters), dpi = 600, bbox_inches = 'tight' )
+    py_plot.savefig( 'imgs/plots/elbow-method/{}-clustering-elbow-method-for-max-of-{}-clusters.png'.format(clustering_algorithm.lower(), num_max_clusters), dpi = 600, bbox_inches = 'tight' )
 
     # Show the Plot
     py_plot.show()
@@ -286,7 +291,7 @@ def build_clusters_centroids_and_radii(xs_features_data, ys_labels_k_means_clust
     return clusters_centroids, clusters_radii
 
 
-def plot_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, final_clustering = False):
+def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, final_clustering = False):
     
     figure, ax = py_plot.subplots(1, figsize = (12,8) )
     
@@ -315,20 +320,20 @@ def plot_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, k_m
     if(final_clustering):
    
         # Set the Title of the K-Means Clustering, for K Clusters
-        py_plot.title( 'Final/Best K-Means Clustering, with K = {} Cluster(s)'.format(num_clusters) )           
+        py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )           
     
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/final-k-means-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
 
     # If it is varying the pre K-Means Clustering,
     # with the a certain K for the number of Clusters
     else:
    
         # Set the Title of the K-Means Clustering, for K Clusters
-        py_plot.title( 'K-Means Clustering, with K = {} Cluster(s)'.format(num_clusters) )     
+        py_plot.title( '{} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )     
         
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/pre-k-means-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
     
 
     # Show the Plot
@@ -338,7 +343,7 @@ def plot_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, k_m
     py_plot.close()
 
 
-def plot_silhouette_analysis(xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, final_clustering = False):
+def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, final_clustering = False):
     
     # Create a subplot with 1 row and 2 columns
     fig, (ax1, ax2) = py_plot.subplots(1, 2)
@@ -357,7 +362,7 @@ def plot_silhouette_analysis(xs_features_data, ys_labels_predicted, k_means_esti
     # The silhouette_score gives the average value for all the samples.
     # This gives a perspective into the density and separation of the formed
     # clusters
-    silhouette_score_average = silhouette_score(xs_features_data, ys_labels_predicted)
+    silhouette_score_average = compute_silhouette_score(xs_features_data, ys_labels_predicted)
 
     # Compute the silhouette scores for each sample
     sample_silhouette_values = skl_silhouette_samples(xs_features_data, ys_labels_predicted)
@@ -416,18 +421,75 @@ def plot_silhouette_analysis(xs_features_data, ys_labels_predicted, k_means_esti
 
     if(final_clustering):
 
-        py_plot.suptitle( "Final/Best Silhouette Analysis for K-Means Clustering, on Sample Data, with K = {} Cluster(s)".format(num_clusters), fontsize = 14, fontweight = 'bold' )
+        py_plot.suptitle( "Final/Best Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
 
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/final-silhouette-analysis/silhouette-analysis-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/final-silhouette-analysis/{}-clustering-silhouette-analysis-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
 
         
     else:
         
-        py_plot.suptitle( "Silhouette Analysis for K-Means Clustering, on Sample Data, with K = {} Cluster(s)".format(num_clusters), fontsize = 14, fontweight = 'bold' )
+        py_plot.suptitle( "Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
 
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/pre-silhouette-analysis/silhouette-analysis-for-{}-clusters-centroids.png'.format(num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/pre-silhouette-analysis/{}-clustering-silhouette-analysis-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+    
+
+    # Show the Plot
+    py_plot.show()
+
+    # Close the Plot
+    py_plot.close()
+    
+    
+    
+def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, confusion_matrix_rand_index_clustering, num_clusters, final_clustering = False):
+    
+    groups_labels = ["Same Group", "Different Group"]
+    clusters_labels = ["Same Cluster", "Different Cluster"]
+
+
+    confusion_matrix_rand_index_clustering = array_matrix([[confusion_matrix_rand_index_clustering[0][0], confusion_matrix_rand_index_clustering[0][1]],
+                                                           [confusion_matrix_rand_index_clustering[1][0], confusion_matrix_rand_index_clustering[1][1]]])
+    
+    fig, ax = py_plot.subplots()
+    ax.imshow(confusion_matrix_rand_index_clustering, cmap = "PuOr")
+    
+    # We want to show all ticks
+    ax.set_xticks(a_range(len(groups_labels)))
+    ax.set_yticks(a_range(len(clusters_labels)))
+    
+    # And label them with the respective list entries
+    ax.set_xticklabels(groups_labels)
+    ax.set_yticklabels(clusters_labels)
+    
+    # Rotate the tick labels and set their alignment
+    py_plot.setp(ax.get_xticklabels(), rotation = 45, ha = "right", rotation_mode = "anchor")
+    
+    # Loop over data dimensions and create text annotations
+    for group_label in range(len(groups_labels)):
+        
+        for cluster_label in range(len(clusters_labels)):
+            
+            ax.text(cluster_label, group_label, confusion_matrix_rand_index_clustering[cluster_label, group_label], ha = "center", va = "center", color = "w")
+    
+    fig.tight_layout()
+    
+    
+    if(final_clustering):
+
+        ax.set_title( "Final/Best Heatmap for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
+
+        # Save the Plot, as a figure/image
+        py_plot.savefig( 'imgs/plots/final-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+
+        
+    else:
+        
+        ax.set_title( "Heatmap for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
+
+        # Save the Plot, as a figure/image
+        py_plot.savefig( 'imgs/plots/pre-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
     
 
     # Show the Plot

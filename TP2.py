@@ -27,14 +27,6 @@ from libs.visualization_and_plotting import generate_analysis_plots
 from libs.visualization_and_plotting import plot_elbow_method
 
 
-from libs.performance_scoring_metrics import f_1_measure_score
-
-from libs.performance_scoring_metrics import silhouette_score
-
-from libs.performance_scoring_metrics import f_1_measure_score
-
-
-
 from k_means_clustering import k_means_pre_clustering_method
 
 from k_means_clustering import k_means_final_clustering
@@ -52,11 +44,6 @@ from numpy import loadtxt as load_txt
 # From the NumPy's Python Library,
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
-
-# Import PyPlot Sub-Module,
-# From Matplotlib Python's Library,
-# as py_plot
-from matplotlib import pyplot as py_plot
 
 # Import Pre-Processing Sub-Module,
 # From SciKit Learn's Python's Library,
@@ -98,13 +85,13 @@ from sklearn.manifold import TSNE as t_distributed_stochastic_neighbor_embedding
 from sklearn.manifold import Isomap as isometric_mapping 
 
 
-# - 4) Features' Selection and Scoring Performances' Libraries:
+# - 4) Features' Selection Libraries:
 
 # Import F Classifier,
 # From the Feature Selection Module
 # of the SciKit-Learn's Python Library,
-# as f_1_score
-from sklearn.feature_selection import f_classif as f_1_score    
+# as f_value_features
+from sklearn.feature_selection import f_classif as f_value_features
 
 # Import Select K Best,
 # From the Feature Selection Module
@@ -244,10 +231,19 @@ xs_features[:, NUM_FEATURES_COMPONENTS : ( 2 * NUM_FEATURES_COMPONENTS ) ] = tra
 xs_features[:, ( 2 * NUM_FEATURES_COMPONENTS ) : ( 3 * NUM_FEATURES_COMPONENTS ) ] = transformed_xs_images_matrix_isomap
 
 
+def f_value_anova(xs_features, ys_labels_true):
+    
+    f_values, probabilities_f_values = f_value_features(xs_features, ys_labels_true) 
+    
+    
+    return f_values, probabilities_f_values
+
+
+
 # Step 2:
 # - Select the best features, based on a predefined threshold;
 # Select the F-Values and the Probabilities, from the F-Test (F1 Score)
-f_values, probabilities_f_values = f_1_measure_score(xs_features, ys_labels_true)
+f_values, probabilities_f_values = f_value_anova(xs_features, ys_labels_true)
 
 
 print("\n\n")
@@ -289,7 +285,7 @@ for current_xs_best_features_priori_index in range(num_best_features_priori_inde
     xs_best_features_priori_1[:, current_xs_best_features_priori_index] = xs_features[:, best_features_priori_indexes[current_xs_best_features_priori_index]]
     
 
-xs_best_features_priori_2 = select_k_best_features(f_1_score, k = num_best_features_priori_indexes).fit_transform(xs_features, ys_labels_true)
+xs_best_features_priori_2 = select_k_best_features(f_value_features, k = num_best_features_priori_indexes).fit_transform(xs_features, ys_labels_true)
 
 
 if(xs_best_features_priori_1.all() == xs_best_features_priori_2.all()):
@@ -301,10 +297,10 @@ if(xs_best_features_priori_1.all() == xs_best_features_priori_2.all()):
 
 normalized_data_xs_best_features_priori = normalize_data(xs_best_features_priori)
 
-errors_k_means_pre_clustering = k_means_pre_clustering_method(normalized_data_xs_best_features_priori, num_max_clusters = NUM_MAX_CLUSTERS)
+errors_k_means_pre_clustering = k_means_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
 
 
-xs_points_elbow_method, ys_points_elbow_method = plot_elbow_method(errors_k_means_pre_clustering, num_max_clusters = NUM_MAX_CLUSTERS)
+xs_points_elbow_method, ys_points_elbow_method = plot_elbow_method("K-Means", errors_k_means_pre_clustering, num_max_clusters = NUM_MAX_CLUSTERS)
 
 kneed_locator_elbow = knee_locator(xs_points_elbow_method, ys_points_elbow_method, S = 1.0, curve = "convex", direction = "decreasing")
 
