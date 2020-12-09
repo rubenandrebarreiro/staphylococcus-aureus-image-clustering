@@ -154,22 +154,26 @@ def compute_clustering_performance_metrics(clustering_algorithm, xs_features, ys
     return silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering
 
 
-def print_clustering_performance_metrics(clustering_algorithm, num_total_clusters, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+def print_clustering_performance_metrics(clustering_algorithm, num_total_clusters, clusters_squared_error_sum_inertia, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
     
     print("\n\n")
     
-    for current_num_clusters in range(0, ( num_total_clusters - 1 ) ):
+    for current_num_clusters in range( 0, num_total_clusters ) :
         
         print("\n")
         
-        print( "Performance Metrics for {} Clustering, with K = {} Cluster(s):".format( clustering_algorithm, ( current_num_clusters + 2 ) ) )
+        print( "Performance Metrics for {} Clustering, with K = {} Cluster(s):".format( clustering_algorithm, ( current_num_clusters + 1 ) ) )
         
-        print( " - Silhouette Score: {}".format(clusters_silhouette_scores[current_num_clusters]) )
-        print( " - Precision Score: {}".format(clusters_precision_scores[current_num_clusters]) )
-        print( " - Recall Score: {}".format(clusters_recall_scores[current_num_clusters]) )
-        print( " - Rand Index Score: {}".format(clusters_rand_index_scores[current_num_clusters]) )
-        print( " - F1 Score: {}".format(clusters_f1_scores[current_num_clusters]) )
-        print( " - Adjusted Rand Score: {}".format(clusters_adjusted_rand_scores[current_num_clusters]) )
+        print( " - Error (Squared Error Sum / Inertia): {}".format(clusters_squared_error_sum_inertia[current_num_clusters]))
+        
+        if( ( current_num_clusters + 1 ) >= 2 ):
+            
+            print( " - Silhouette Score: {}".format(clusters_silhouette_scores[ ( current_num_clusters - 1 ) ]) )
+            print( " - Precision Score: {}".format(clusters_precision_scores[ ( current_num_clusters - 1 ) ]) )
+            print( " - Recall Score: {}".format(clusters_recall_scores[ ( current_num_clusters - 1 ) ]) )
+            print( " - Rand Index Score: {}".format(clusters_rand_index_scores[ ( current_num_clusters - 1 ) ]) )
+            print( " - F1 Score: {}".format(clusters_f1_scores[ ( current_num_clusters - 1 ) ]) )
+            print( " - Adjusted Rand Score: {}".format(clusters_adjusted_rand_scores[ ( current_num_clusters - 1 ) ]) )
         
         print("\n")
         

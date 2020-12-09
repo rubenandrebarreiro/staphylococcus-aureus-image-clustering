@@ -22,7 +22,7 @@ from libs.utils import create_data_frames_extraction
 
 from libs.visualization_and_plotting import intialize_plotting_style
 
-from libs.visualization_and_plotting import generate_analysis_plots
+from libs.visualization_and_plotting import generate_data_analysis_plots
 
 from libs.visualization_and_plotting import plot_elbow_method
 
@@ -32,7 +32,7 @@ from k_means_clustering import k_means_pre_clustering_method
 from k_means_clustering import k_means_final_clustering
 
 
-from dbscan_clustering import dbscan_pre_clustering_method
+#from dbscan_clustering import dbscan_pre_clustering_method
 
 #from dbscan_clustering import dbscan_final_clustering_method
 
@@ -212,7 +212,7 @@ data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transf
 intialize_plotting_style('seaborn-dark')
 
 # Generate Analysis' Plots, for several Visualization Plots
-generate_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
+generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
 
 
 # The final Features Extracted, to be used, in the Clustering methods,
@@ -306,12 +306,11 @@ normalized_data_xs_best_features_priori = normalize_data(xs_best_features_priori
 
 # ---- K-Means Clustering ----
 
-errors_k_means_pre_clustering = k_means_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
+k_means_squared_errors_sums_intertias, k_means_silhouette_scores, k_means_precision_scores, k_means_recall_scores, k_means_rand_index_scores, k_means_f1_scores, k_means_adjusted_rand_scores = k_means_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
 
+k_means_xs_points_elbow_method, k_means_ys_points_elbow_method = plot_elbow_method("K-Means", k_means_squared_errors_sums_intertias, num_max_clusters = NUM_MAX_CLUSTERS)
 
-xs_points_elbow_method, ys_points_elbow_method = plot_elbow_method("K-Means", errors_k_means_pre_clustering, num_max_clusters = NUM_MAX_CLUSTERS)
-
-kneed_locator_elbow = knee_locator(xs_points_elbow_method, ys_points_elbow_method, S = 1.0, curve = "convex", direction = "decreasing")
+kneed_locator_elbow = knee_locator(k_means_xs_points_elbow_method, k_means_ys_points_elbow_method, S = 1.0, curve = "convex", direction = "decreasing")
 
 
 final_num_clusters = round(kneed_locator_elbow.elbow, 0)
@@ -319,7 +318,7 @@ final_num_clusters = round(kneed_locator_elbow.elbow, 0)
 print( "The best K (Number of Clusters), for K-Means Clustering, found:" )
 print( "- {}\n\n".format(final_num_clusters) )
 
-error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_best_features_priori, num_clusters = final_num_clusters)
+error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_clusters = final_num_clusters)
 
 # ---- K-Means Clustering ----
 

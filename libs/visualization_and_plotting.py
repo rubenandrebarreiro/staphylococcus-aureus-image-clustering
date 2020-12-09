@@ -214,7 +214,7 @@ def plot_andrews_curves(data_frame_transformed_extraction, method, num_component
     py_plot.close()
 
 
-def generate_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = 6):
+def generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = 6):
     
     plot_stacked_histograms(data_frame_transformed_extraction_pca[data_frame_columns_pca[0 : -1]], "PCA", num_components = num_components, alpha_value = 0.8)
     plot_stacked_histograms(data_frame_transformed_extraction_tsne[data_frame_columns_tsne[0 : -1]], "TSNE", num_components = num_components, alpha_value = 0.8)
@@ -245,13 +245,13 @@ def generate_analysis_plots(data_frame_transformed_extraction_pca, data_frame_co
     plot_andrews_curves(data_frame_transformed_extraction_isomap, "Isomap", num_components = num_components)
     
 
-def plot_elbow_method(clustering_algorithm, errors_k_means_clustering, num_max_clusters = 12):
+def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_max_clusters = 12):
     
     # The xs data points ( Number of Clusters )
     xs_points = range( 1, ( num_max_clusters + 1 ) )
     
     # The ys data points ( Errors (Sums of Squared Errors) )
-    ys_points = errors_k_means_clustering
+    ys_points = squared_errors_sums_intertias
     
     # Plot the xs data points ( Number of Clusters ) and
     # their respective ys data points ( Errors (Sums of Squared Errors) )
@@ -323,7 +323,7 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
         py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )           
     
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/final-{}-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
 
     # If it is varying the pre K-Means Clustering,
     # with the a certain K for the number of Clusters
@@ -333,7 +333,7 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
         py_plot.title( '{} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )     
         
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/k-means-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/pre-{}-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
     
 
     # Show the Plot
@@ -424,7 +424,7 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
         py_plot.suptitle( "Final/Best Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
 
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/final-silhouette-analysis/{}-clustering-silhouette-analysis-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/final-{}-clustering-silhouette-analysis/final-{}-clustering-silhouette-analysis-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
 
         
     else:
@@ -432,7 +432,7 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
         py_plot.suptitle( "Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
 
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/pre-silhouette-analysis/{}-clustering-silhouette-analysis-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/pre-{}-clustering-silhouette-analysis/pre-{}-clustering-silhouette-analysis-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
     
 
     # Show the Plot
@@ -481,7 +481,7 @@ def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, co
         ax.set_title( "Final/Best Heatmap for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
 
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/final-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/final-{}-clustering-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
 
         
     else:
@@ -489,7 +489,7 @@ def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, co
         ax.set_title( "Heatmap for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
 
         # Save the Plot, as a figure/image
-        py_plot.savefig( 'imgs/plots/pre-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+        py_plot.savefig( 'imgs/plots/pre-{}-clustering-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
     
 
     # Show the Plot
