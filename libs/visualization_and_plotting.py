@@ -346,15 +346,9 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
         patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125)
         ax.add_patch(patch_cluster_area)
         
-        if(clustering_algorithm == "DBScan"):
-        
-            # Plot the Data (xs Points), as Scatter Points
-            py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Cluster #{}".format(current_cluster_i))
             
-        else:
-            
-            # Plot the Data (xs Points), as Scatter Points
-            py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Cluster #{}".format(current_cluster_i))
+        # Plot the Data (xs Points), as Scatter Points
+        py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Cluster #{}".format(current_cluster_i))
         
         
         # Plot the Centroids of the Clusters, as Scatter Points
