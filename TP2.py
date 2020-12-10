@@ -129,7 +129,17 @@ F_VALUE_THRESHOLD = 10.0
 # The maximum number of Clusters for the K-Means Clustering
 NUM_MAX_CLUSTERS = 12
 
-NUM_NEIGHBORS = 5
+# The number of K Nearest Neighbors
+NUM_K_NEAREST_NEIGHBORS = 5
+
+# The start value of ε (Epsilon), for the DBScan Clustering
+START_EPSILON = 0.001
+
+# The end value of ε (Epsilon), for the DBScan Clustering
+END_EPSILON = 2.0
+
+# The step value of ε (Epsilon), for the DBScan Clustering
+STEP_EPSILON = 0.001
 
 # -------------------------------------------------------------------#
 
@@ -333,10 +343,10 @@ min_max_scaler_data = min_max_scaler()
     
 normalized_data_transformed_xs_best_features_priori = min_max_scaler_data.fit_transform(normalized_data_xs_best_features_priori)
 
-k_neighbors_distances = compute_distances_nearest_neighbors(normalized_data_transformed_xs_best_features_priori, num_neighbors = NUM_NEIGHBORS)
+k_neighbors_distances = compute_distances_nearest_neighbors(normalized_data_transformed_xs_best_features_priori, num_neighbors = NUM_K_NEAREST_NEIGHBORS)
 
-plot_k_distance_method("DBScan", k_neighbors_distances, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001)
+plot_k_distance_method("DBScan", k_neighbors_distances, start_epsilon = START_EPSILON, end_epsilon = END_EPSILON, step_epsilon = STEP_EPSILON)
 
 dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering_method(normalized_data_transformed_xs_best_features_priori, ys_labels_true, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001)
-    
+
 # ---- DBScan Clustering ----
