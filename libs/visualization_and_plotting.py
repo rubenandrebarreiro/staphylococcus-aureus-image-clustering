@@ -40,13 +40,14 @@ from numpy.linalg import norm as norm_number
 # as pandas_plot
 from pandas import plotting as pandas_plot
 
-
-from libs.performance_scoring_metrics import compute_silhouette_score
-
 # Import metrics.silhouette_samples Sub-Module,
 # from SciKit-Learn Python's Library,
 # as skl_silhouette_samples
 from sklearn.metrics import silhouette_samples as skl_silhouette_samples
+
+
+
+from libs.performance_scoring_metrics import compute_silhouette_score
 
 
 COLORS_MATPLOTLIB = ['red', 'darkorange', 'goldenrod', 'yellow', 'lawngreen', 'forestgreen', 'turquoise', 'teal', 'deepskyblue', 'midnightblue', 'blue', 'darkviolet', 'magenta', 'pink']
@@ -274,19 +275,21 @@ def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_m
 
     # Close the Plot
     py_plot.close()
+
     
     return xs_points, ys_points
 
 
-def plot_k_distance_method(clustering_algorithm, points_distances, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001):
+
+def plot_k_distance_method(clustering_algorithm, k_neighbors_distances, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001):
     
-    # The xs data points ( Epsilons )
+    # The xs data points ( ε (Epsilons) )
     xs_points = a_range( start_epsilon, ( end_epsilon + step_epsilon ), step_epsilon )
     
-    # The ys data points ( Distances )
-    ys_points = points_distances
+    # The ys data points ( K Neighbors' Distances )
+    ys_points = k_neighbors_distances
     
-    # Plot the xs data points ( Epsilons ) and
+    # Plot the xs data points ( ε (Epsilons) ) and
     # their respective ys data points ( Distances )
     py_plot.plot(xs_points, ys_points)
     
@@ -308,6 +311,10 @@ def plot_k_distance_method(clustering_algorithm, points_distances, start_epsilon
     # Close the Plot
     py_plot.close()
     
+    
+    return xs_points, ys_points
+    
+
 
 def build_clusters_centroids_and_radii(xs_features_data, ys_labels_k_means_clusters, k_means_estimator_centroids):
     

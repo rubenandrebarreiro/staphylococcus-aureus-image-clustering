@@ -10,10 +10,37 @@ Created on Mon Dec  7 11:45:59 2020
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
 
+# Import sort,
+# From the NumPy's Python Library,
+# as ordering_sort
+from numpy import sort as ordering_sort
+
 # Import DataFrame Sub-Module,
 # From Pandas Python's Library,
 # as pandas_data_frame
 from pandas import DataFrame as pandas_data_frame
+
+# Import Neighbors.NearestNeighbors Sub-Module,
+# from SciKit-Learn Python's Library,
+# as nearest_neighbors
+from sklearn.neighbors import NearestNeighbors as skl_nearest_neighbors
+
+
+def compute_distances_nearest_neighbors(xs_features_data, num_neighbors = 5):
+    
+    nearest_neighbors = skl_nearest_neighbors(n_neighbors = num_neighbors)
+    
+    neighbors = nearest_neighbors.fit(xs_features_data)
+    
+    
+    k_neighbors_distances, k_neighbors_indices = neighbors.kneighbors(xs_features_data)
+    
+    k_neighbors_distances = ordering_sort(k_neighbors_distances, axis = 0)
+    
+    k_neighbors_distances = k_neighbors_distances[:, 1]
+    
+    
+    return k_neighbors_distances
 
 
 # The Function to create the Data Frames for the Features' Extractions' Datasets 

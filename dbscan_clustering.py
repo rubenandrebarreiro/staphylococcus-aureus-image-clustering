@@ -22,25 +22,10 @@ from numpy import zeros as matrix_array_zeros
 # as a_range
 from numpy import arange as a_range
 
-# Import sort,
-# From the NumPy's Python Library,
-# as ordering_sort
-from numpy import sort as ordering_sort
-
-# Import preprocessing.MinMaxScaler Sub-Module,
-# from SciKit-Learn Python's Library,
-# as min_max_scaler
-from sklearn.preprocessing import MinMaxScaler as min_max_scaler
-
 # Import Cluster.DBSCAN Sub-Module,
 # from SciKit-Learn Python's Library,
 # as dbscan
 from sklearn.cluster import DBSCAN as dbscan
-
-# Import Neighbors.NearestNeighbors Sub-Module,
-# from SciKit-Learn Python's Library,
-# as nearest_neighbors
-from sklearn.neighbors import NearestNeighbors as nearest_neighbors
 
 
 from libs.visualization_and_plotting import plot_clusters_centroids_and_radii
@@ -54,21 +39,6 @@ from libs.performance_scoring_metrics import compute_clustering_performance_metr
 
 from libs.performance_scoring_metrics import print_dbscan_clustering_performance_metrics
 
-
-
-def dbscan_compute_distances(xs_features_data, num_neighbors = 5):
-    
-    dbscan_nearest_neighbors = nearest_neighbors(n_neighbors = num_neighbors)
-    
-    dbscan_neighbors = dbscan_nearest_neighbors.fit(xs_features_data)
-    
-    dbscan_k_neighbors_distances, dbscan_k_neighbors_indices = dbscan_neighbors.kneighbors(xs_features_data)
-    
-    dbscan_k_neighbors_distances = ordering_sort(dbscan_k_neighbors_distances, axis = 0)
-    dbscan_k_neighbors_distances = dbscan_k_neighbors_distances[:, 1]
-    
-    
-    return dbscan_k_neighbors_distances
 
 
 def dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_neighbors):
@@ -92,12 +62,6 @@ def dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_neig
 
 def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001):
     
-    # TODO - faz diferença normalizar de novo os dados?!
-    min_max_scaler_data = min_max_scaler()
-    
-    xs_features_data_transformed = min_max_scaler_data.fit_transform(xs_features_data)
-
-    
     current_epsilon_step = 0
     
     num_epsilons_steps = ( ( end_epsilon - start_epsilon ) / step_epsilon )
@@ -117,23 +81,23 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, start_epsilon
     
     for current_epsilon in a_range(start_epsilon, end_epsilon, step_epsilon):
        
-        ys_labels_predicted, clusters_centroids, xs_features_data_transformed_inliers, xs_features_data_transformed_outliers = dbscan_clustering_method(xs_features_data_transformed, current_epsilon)
+        ys_labels_predicted, clusters_centroids, xs_features_data_inliers, xs_features_data_outliers = dbscan_clustering_method(xs_features_data, current_epsilon)
      
         num_clusters_centroids = len(clusters_centroids)
         
-        plot_clusters_centroids_and_radii("DBScan", xs_features_data_transformed, ys_labels_predicted, clusters_centroids, num_clusters = num_clusters_centroids, final_clustering = False)
+        plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = num_clusters_centroids, final_clustering = False)
         
         
         clusters_num_centroids[current_epsilon_step] = num_clusters_centroids
-        clusters_num_inliers[current_epsilon_step] = len(xs_features_data_transformed_inliers)
-        clusters_num_outliers[current_epsilon_step] = len(xs_features_data_transformed_outliers)
+        clusters_num_inliers[current_epsilon_step] = len(xs_features_data_inliers)
+        clusters_num_outliers[current_epsilon_step] = len(xs_features_data_outliers)
         
         
         if(num_clusters_centroids >= 2):
             
-            plot_silhouette_analysis("DBScan", xs_features_data_transformed, ys_labels_predicted, clusters_centroids, num_clusters_centroids, final_clustering = False)
+            plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters_centroids, final_clustering = False)
         
-            silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("K-Means", xs_features_data_transformed, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = False)
+            silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = False)
             
             plot_confusion_matrix_rand_index_clustering_heatmap("DBScan", confusion_matrix_rand_index_clustering, num_clusters_centroids, final_clustering = False)
             

@@ -20,11 +20,16 @@ install_required_system_libraries("kneed")
 
 from libs.utils import create_data_frames_extraction
 
+from libs.utils import compute_distances_nearest_neighbors
+
+
 from libs.visualization_and_plotting import intialize_plotting_style
 
 from libs.visualization_and_plotting import generate_data_analysis_plots
 
 from libs.visualization_and_plotting import plot_elbow_method
+
+from libs.visualization_and_plotting import plot_k_distance_method
 
 
 from k_means_clustering import k_means_pre_clustering_method
@@ -55,6 +60,10 @@ from numpy import zeros as matrix_array_zeros
 # as normalize_data
 from sklearn.preprocessing import normalize as normalize_data
 
+# Import preprocessing.MinMaxScaler Sub-Module,
+# from SciKit-Learn Python's Library,
+# as min_max_scaler
+from sklearn.preprocessing import MinMaxScaler as min_max_scaler
 
 # - 2) Customised Libraries:
 
@@ -105,14 +114,6 @@ from sklearn.feature_selection import f_classif as f_value_features
 from sklearn.feature_selection import SelectKBest as select_k_best_features
 
 
-# - 5) Clustering Methods' Libraries:
-
-# Import cluster.DBSCAN Sub-Module,
-# from SciKit-Learn Python's Library,
-# as dbscan
-from sklearn.cluster import DBSCAN as dbscan
-
-
 # -------------------------------------------------------------------#
 
 # A) CONSTANTS:
@@ -127,6 +128,8 @@ F_VALUE_THRESHOLD = 10.0
 
 # The maximum number of Clusters for the K-Means Clustering
 NUM_MAX_CLUSTERS = 12
+
+NUM_NEIGHBORS = 5
 
 # -------------------------------------------------------------------#
 
@@ -325,6 +328,15 @@ error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_bes
 
 # ---- DBScan Clustering ----
 
-dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001)
+# TODO - faz diferença normalizar de novo os dados?!
+min_max_scaler_data = min_max_scaler()
+    
+normalized_data_transformed_xs_best_features_priori = min_max_scaler_data.fit_transform(normalized_data_xs_best_features_priori)
+
+k_neighbors_distances = compute_distances_nearest_neighbors(normalized_data_transformed_xs_best_features_priori, num_neighbors = NUM_NEIGHBORS)
+
+plot_k_distance_method("DBScan", k_neighbors_distances, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001)
+
+dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering_method(normalized_data_transformed_xs_best_features_priori, ys_labels_true, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001)
     
 # ---- DBScan Clustering ----
