@@ -86,8 +86,7 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
     for current_epsilon in a_range(start_epsilon, end_epsilon, step_epsilon):
        
         ys_labels_predicted, clusters_centroids_indices, clusters_centroids_points, clusters_border_points, xs_features_data_inliers, xs_features_data_outliers = dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_k_neighbors = num_closest_k_neighbors)
-      
-        
+
         cluster_labels = set(ys_labels_predicted)
         
         cluster_labels.remove(-1)

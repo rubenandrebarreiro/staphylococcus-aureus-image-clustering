@@ -139,7 +139,7 @@ START_EPSILON = 0.01
 END_EPSILON = 0.28
 
 # The step value of ε (Epsilon), for the DBScan Clustering
-STEP_EPSILON = 0.01
+STEP_EPSILON = 0.003
 
 # -------------------------------------------------------------------#
 

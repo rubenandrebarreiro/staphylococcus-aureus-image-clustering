@@ -414,12 +414,20 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
     py_plot.close()
 
 
-def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, epsilon = None, final_clustering = False):
+def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, final_clustering = False):
     
     # Create a subplot with 1 row and 2 columns
     fig, (ax1, ax2) = py_plot.subplots(1, 2)
+
     
-    fig.set_size_inches(18, 8)
+    if(clustering_algorithm == "DBScan"):
+        
+        fig.set_size_inches(24, 8)        
+    
+    else:
+    
+        fig.set_size_inches(18, 8)
+
 
     # The 1st subplot is the silhouette plot
     # The silhouette coefficient can range from -1, 1 but in this example all
@@ -439,7 +447,7 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     sample_silhouette_values = skl_silhouette_samples(xs_features_data, ys_labels_predicted)
     
     
-    clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, k_means_estimator_centroids)
+    clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, estimator_centroids)
     
 
     y_lower = 10
@@ -450,6 +458,12 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
         ax2.add_patch(patch_cluster_area)
     
         ax2.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 30, label = "Cluster #{}".format(current_cluster_i))    
+
+
+        if(clustering_algorithm == "DBScan"):
+
+            ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30, label = "Outliers (Noise)")    
+            
     
         # Aggregate the silhouette scores for samples belonging to
         # cluster i, and sort them
@@ -480,12 +494,24 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     ax1.set_yticks([])  # Clear the yaxis labels / ticks
     ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])    
 
-    # Draw white circles at cluster centers
-    ax2.scatter(k_means_estimator_centroids[:, 0], k_means_estimator_centroids[:, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'k')
+    if(clustering_algorithm == "DBScan"):
+        
+        for current_cluster_i in range(num_clusters):
+            
+            # Draw white circles at cluster centers
+            ax2.scatter(estimator_centroids[current_cluster_i][0], estimator_centroids[current_cluster_i, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black')
+        
+            ax2.scatter(estimator_centroids[current_cluster_i][0], estimator_centroids[current_cluster_i, 1], marker = ( '$%d$' % current_cluster_i ), alpha = 1, s = 50, edgecolor = 'black')
+        
+    else:
+        
+        # Draw white circles at cluster centers
+        ax2.scatter(estimator_centroids[:, 0], estimator_centroids[:, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black')
+    
+        for num_cluster_centroid, cluster_centroid in enumerate(estimator_centroids):
+            ax2.scatter( cluster_centroid[0], cluster_centroid[1], marker = ( '$%d$' % num_cluster_centroid ), alpha = 1, s = 50, edgecolor = 'black' )
 
-    for num_cluster_centroid, cluster_centroid in enumerate(k_means_estimator_centroids):
-        ax2.scatter( cluster_centroid[0], cluster_centroid[1], marker = ( '$%d$' % num_cluster_centroid ), alpha = 1, s = 50, edgecolor = 'black' )
-
+    
     ax2.set_title("The Visualization of the Clustered Data")
     ax2.set_xlabel("Feature Space for the 1st Feature")
     ax2.set_ylabel("Feature Space for the 2nd Feature")
