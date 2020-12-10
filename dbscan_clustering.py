@@ -17,6 +17,8 @@ from numpy import zeros as matrix_array_zeros
 # as a_range
 from numpy import arange as a_range
 
+from numpy import array as array_matrix
+
 # Import Cluster.DBSCAN Sub-Module,
 # from SciKit-Learn Python's Library,
 # as dbscan
@@ -44,18 +46,32 @@ def dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_k_ne
     
     ys_labels_predicted = dbscan_clustering.labels_
     
-    clusters_centroids = dbscan_clustering.core_sample_indices_
+    
+    clusters_centroids_indices = dbscan_clustering.core_sample_indices_
     
 
     xs_features_data_inliers = xs_features_data[ys_labels_predicted != -1]
     
     xs_features_data_outliers = xs_features_data[ys_labels_predicted == -1]
+
     
-    
-    return ys_labels_predicted, clusters_centroids, xs_features_data_inliers, xs_features_data_outliers
+    clusters_centroids_points = xs_features_data[clusters_centroids_indices, :]
 
 
-def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k_neighbors = 5, start_epsilon = 0.01, end_epsilon = 0.285, step_epsilon = 0.01):
+    
+    print("QUERIAAAAAAAS")
+    print(clusters_centroids_points)
+    print("QUERIAAAAAAAS")
+    
+    
+
+    clusters_border_points = array_matrix([list(point) for point in xs_features_data_inliers if point not in clusters_centroids_points])
+    
+    
+    return ys_labels_predicted, clusters_centroids_indices, clusters_centroids_points, clusters_border_points, xs_features_data_inliers, xs_features_data_outliers
+
+
+def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k_neighbors = 5, start_epsilon = 0.01, end_epsilon = 0.28, step_epsilon = 0.01):
     
     current_epsilon_step = 0
     
@@ -78,11 +94,44 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
     
     for current_epsilon in a_range(start_epsilon, end_epsilon, step_epsilon):
        
-        ys_labels_predicted, clusters_centroids, xs_features_data_inliers, xs_features_data_outliers = dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_k_neighbors = num_closest_k_neighbors)
+        ys_labels_predicted, clusters_centroids_indices, clusters_centroids_points, clusters_border_points, xs_features_data_inliers, xs_features_data_outliers = dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_k_neighbors = num_closest_k_neighbors)
      
-        num_clusters_centroids = len(clusters_centroids)
+        print("PREDICTIONS:")
+        print(ys_labels_predicted)
+        print("\n\n")
+
+        print("CENTROIDS INDEXES:")
+        print(clusters_centroids_indices)
+        print("\n\n")
         
-        plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
+        print("CENTROIDS POINTS:")
+        print(clusters_centroids_points)
+        print("\n\n")
+        
+        print("BORDER POINTS:")
+        print(clusters_border_points)
+        print("\n\n")
+        
+        print("INLIERS:")
+        print(xs_features_data_inliers)
+        print("\n\n")
+
+        print("OUTLIERS:")
+        print(xs_features_data_outliers)
+        print("\n\n")
+     
+        
+        cluster_labels = set(ys_labels_predicted)
+        
+        print(cluster_labels)
+        
+        cluster_labels.remove(-1)
+        
+        print(cluster_labels)
+        
+        num_clusters_centroids = len(cluster_labels)
+        
+        plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
         
         
         clusters_num_centroids[current_epsilon_step] = num_clusters_centroids
@@ -92,7 +141,7 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
         
         if(num_clusters_centroids >= 2):
             
-            plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
+            plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
         
             silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = False)
             

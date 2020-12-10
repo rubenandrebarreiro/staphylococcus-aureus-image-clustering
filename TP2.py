@@ -136,7 +136,7 @@ NUM_K_NEAREST_NEIGHBORS = 5
 START_EPSILON = 0.01
 
 # The end value of ε (Epsilon), for the DBScan Clustering
-END_EPSILON = 0.285
+END_EPSILON = 0.28
 
 # The step value of ε (Epsilon), for the DBScan Clustering
 STEP_EPSILON = 0.01
@@ -225,7 +225,7 @@ data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transf
 intialize_plotting_style('seaborn-dark')
 
 # Generate Analysis' Plots, for several Visualization Plots
-generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
+#generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
 
 
 # The final Features Extracted, to be used, in the Clustering methods,
@@ -319,6 +319,7 @@ normalized_data_xs_best_features_priori = normalize_data(xs_best_features_priori
 
 # ---- K-Means Clustering ----
 
+"""
 k_means_squared_errors_sums_intertias, k_means_silhouette_scores, k_means_precision_scores, k_means_recall_scores, k_means_rand_index_scores, k_means_f1_scores, k_means_adjusted_rand_scores = k_means_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
 
 k_means_xs_points_elbow_method, k_means_ys_points_elbow_method = plot_elbow_method("K-Means", k_means_squared_errors_sums_intertias, num_max_clusters = NUM_MAX_CLUSTERS)
@@ -332,6 +333,8 @@ print( "The best K (Number of Clusters), for K-Means Clustering, found:" )
 print( "- {}\n\n".format(final_num_clusters) )
 
 error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_clusters = final_num_clusters)
+
+"""
 
 # ---- K-Means Clustering ----
 
