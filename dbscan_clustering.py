@@ -3,11 +3,6 @@
 Created on Tue Dec  8 17:35:35 2020
 
 @author: Martim Figueiredo
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Dec  7 13:16:58 2020
 
 @author: rubenandrebarreiro
 """
@@ -41,9 +36,9 @@ from libs.performance_scoring_metrics import print_dbscan_clustering_performance
 
 
 
-def dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_neighbors):
+def dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_k_neighbors = 5):
     
-    dbscan_clustering = dbscan(eps = current_epsilon, min_samples = num_closest_neighbors)
+    dbscan_clustering = dbscan(eps = current_epsilon, min_samples = num_closest_k_neighbors)
     
     dbscan_clustering.fit(xs_features_data)
     
@@ -60,12 +55,14 @@ def dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_neig
     return ys_labels_predicted, clusters_centroids, xs_features_data_inliers, xs_features_data_outliers
 
 
-def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001):
+def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k_neighbors = 5, start_epsilon = 0.01, end_epsilon = 0.285, step_epsilon = 0.01):
     
     current_epsilon_step = 0
     
-    num_epsilons_steps = ( ( end_epsilon - start_epsilon ) / step_epsilon )
-        
+    num_epsilons_steps = int( ( end_epsilon - start_epsilon ) / step_epsilon )
+    
+    print(num_epsilons_steps)
+    
     clusters_num_centroids = matrix_array_zeros( num_epsilons_steps )
     
     clusters_num_inliers = matrix_array_zeros( num_epsilons_steps )
@@ -81,7 +78,7 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, start_epsilon
     
     for current_epsilon in a_range(start_epsilon, end_epsilon, step_epsilon):
        
-        ys_labels_predicted, clusters_centroids, xs_features_data_inliers, xs_features_data_outliers = dbscan_clustering_method(xs_features_data, current_epsilon)
+        ys_labels_predicted, clusters_centroids, xs_features_data_inliers, xs_features_data_outliers = dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_k_neighbors = num_closest_k_neighbors)
      
         num_clusters_centroids = len(clusters_centroids)
         
@@ -142,26 +139,6 @@ from libs.visualization_and_plotting import plot_clusters_centroids_and_radii_db
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.cm as cm
 
-def dbscan_clustering_method(xs_features_data, epsilon):
-    
-    norm_data = MinMaxScaler()
-    X = norm_data.fit_transform(xs_features_data)
-    
-    dbscan_clustering = DBSCAN(eps = epsilon, min_samples = 5)
-     
-    dbscan_clustering.fit(X)
-     
-    ys_labels_predicted = dbscan_clustering.labels_
-    
-    clusters_centroids = dbscan_clustering.core_sample_indices_
-    
-    outliers = X[ys_labels_predicted == -1]
-    centroids = X[ys_labels_predicted != -1]
-
-    print(ys_labels_predicted)
-    print("\n")
-    print(clusters_centroids)
-    
     
     #FALTA ORDERNAR OS VALORES COMO DIZ NO ENUNCIADO
     from sklearn.neighbors import NearestNeighbors
@@ -193,25 +170,7 @@ def dbscan_clustering_method(xs_features_data, epsilon):
         """
   
 """ return ys_labels_predicted, clusters_centroids
-    
-     
-
-def dbscan_pre_clustering_method(xs_features_data, epsilon_max):
-     
-    errors_dbscan_pre_clustering = []
-    epsilon = 0.01
-    
-    for epsilon in np.arange(0.001, 1, 0.001):
-       
-        ys_labels_predicted, clusters_centroids = dbscan_clustering_method(xs_features_data, epsilon)
-     
-       
-    return errors_dbscan_pre_clustering
-    
-    
    
-
-
 """
      
 
