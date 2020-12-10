@@ -281,17 +281,14 @@ def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_m
 
 
 
-def plot_k_distance_method(clustering_algorithm, k_neighbors_distances, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001):
-    
-    # The xs data points ( ε (Epsilons) )
-    xs_points = a_range( start_epsilon, ( end_epsilon + step_epsilon ), step_epsilon )
+def plot_k_distance_method(clustering_algorithm, k_neighbors_distances):
     
     # The ys data points ( K Neighbors' Distances )
     ys_points = k_neighbors_distances
     
     # Plot the xs data points ( ε (Epsilons) ) and
     # their respective ys data points ( Distances )
-    py_plot.plot(xs_points, ys_points)
+    py_plot.plot(ys_points)
     
     # Set the Title of the Elbow Method Plot
     py_plot.title( 'K-Distance Method for {} Clustering'.format(clustering_algorithm) )
@@ -303,7 +300,7 @@ def plot_k_distance_method(clustering_algorithm, k_neighbors_distances, start_ep
     py_plot.ylabel('ε (Epsilon Value)')
         
     # Save the Plot, as a figure/image
-    py_plot.savefig( 'imgs/plots/k-distance-method/{}-clustering-elbow-method-for-max-of-{}-clusters.png'.format(clustering_algorithm.lower(), end_epsilon), dpi = 600, bbox_inches = 'tight' )
+    py_plot.savefig( 'imgs/plots/k-distance-method/{}-clustering-k-distance-method.png'.format(clustering_algorithm.lower()), dpi = 600, bbox_inches = 'tight' )
 
     # Show the Plot
     py_plot.show()
@@ -312,7 +309,7 @@ def plot_k_distance_method(clustering_algorithm, k_neighbors_distances, start_ep
     py_plot.close()
     
     
-    return xs_points, ys_points
+    return ys_points
     
 
 

@@ -26,9 +26,10 @@ from pandas import DataFrame as pandas_data_frame
 from sklearn.neighbors import NearestNeighbors as skl_nearest_neighbors
 
 
-def compute_distances_nearest_neighbors(xs_features_data, num_neighbors = 5):
+def compute_distances_nearest_neighbors(xs_features_data, num_closest_k_neighbors = 5):
     
-    nearest_neighbors = skl_nearest_neighbors(n_neighbors = num_neighbors)
+    # TODO - FALTA ORDERNAR OS VALORES COMO DIZ NO ENUNCIADO
+    nearest_neighbors = skl_nearest_neighbors(n_neighbors = num_closest_k_neighbors)
     
     neighbors = nearest_neighbors.fit(xs_features_data)
     
