@@ -62,16 +62,16 @@ def k_means_pre_clustering_method(xs_features_data, ys_labels_true, num_total_cl
                 
         clusters_squared_errors_sums_intertias[ ( current_num_clusters - 1 ) ] = error_k_means_pre_clustering
         
-        plot_clusters_centroids_and_radii("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = current_num_clusters, final_clustering = False)
+        plot_clusters_centroids_and_radii("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = current_num_clusters, epsilon = None, final_clustering = False)
         
         
         if(current_num_clusters >= 2):
             
-            plot_silhouette_analysis("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, current_num_clusters, final_clustering = False)
+            plot_silhouette_analysis("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, current_num_clusters, epsilon = None, final_clustering = False)
         
             silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, current_num_clusters, final_clustering = False)
             
-            plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", confusion_matrix_rand_index_clustering, current_num_clusters, final_clustering = False)
+            plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", confusion_matrix_rand_index_clustering, current_num_clusters, epsilon = None, final_clustering = False)
                         
             clusters_silhouette_scores[( current_num_clusters - 2 )] = silhouette_score
             clusters_precision_scores[( current_num_clusters - 2 )] = precision_score
@@ -91,16 +91,16 @@ def k_means_final_clustering(xs_features_data, ys_labels_true, num_clusters = 5)
     
     ys_labels_predicted, k_means_estimator_centroids, k_means_final_clustering_error = k_means_clustering_method(xs_features_data, num_clusters)
     
-    plot_clusters_centroids_and_radii("K-Means", xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters = num_clusters, final_clustering = True)
+    plot_clusters_centroids_and_radii("K-Means", xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters = num_clusters, epsilon = None, final_clustering = True)
     
     
     if(num_clusters >= 2):
             
-            plot_silhouette_analysis("K-Means", xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, final_clustering = True)
+            plot_silhouette_analysis("K-Means", xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, epsilon = None, final_clustering = True)
             
             k_means_final_clustering_silhouette_score, k_means_final_clustering_precision_score, k_means_final_clustering_recall_score, k_means_final_clustering_rand_index_score, k_means_final_clustering_f1_score, k_means_final_clustering_adjusted_rand_score, k_means_final_clustering_confusion_matrix_rand_index = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters, final_clustering = True)
             
-            plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", k_means_final_clustering_confusion_matrix_rand_index, num_clusters, final_clustering = True)
+            plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", k_means_final_clustering_confusion_matrix_rand_index, num_clusters, epsilon = None, final_clustering = True)
             
     
     return k_means_final_clustering_error, k_means_final_clustering_silhouette_score, k_means_final_clustering_precision_score, k_means_final_clustering_recall_score, k_means_final_clustering_rand_index_score, k_means_final_clustering_f1_score, k_means_final_clustering_adjusted_rand_score, k_means_final_clustering_confusion_matrix_rand_index

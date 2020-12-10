@@ -82,7 +82,7 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
      
         num_clusters_centroids = len(clusters_centroids)
         
-        plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = num_clusters_centroids, final_clustering = False)
+        plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
         
         
         clusters_num_centroids[current_epsilon_step] = num_clusters_centroids
@@ -92,11 +92,11 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
         
         if(num_clusters_centroids >= 2):
             
-            plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters_centroids, final_clustering = False)
+            plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
         
             silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = False)
             
-            plot_confusion_matrix_rand_index_clustering_heatmap("DBScan", confusion_matrix_rand_index_clustering, num_clusters_centroids, final_clustering = False)
+            plot_confusion_matrix_rand_index_clustering_heatmap("DBScan", confusion_matrix_rand_index_clustering, num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
             
             
             clusters_silhouette_scores[current_epsilon_step] = silhouette_score
@@ -122,59 +122,4 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
     
     
     return clusters_num_centroids, clusters_num_inliers, clusters_num_outliers, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
-    
 
-
-"""
-
-# Import cluster.DBSCAN Sub-Module,
-# from SciKit-Learn Python's Library,
-# as dbscan
-
-from sklearn.cluster import DBSCAN
-from matplotlib import pyplot as plt
-import numpy as np
-from pandas import DataFrame as pandas_data_frame
-from libs.visualization_and_plotting import plot_clusters_centroids_and_radii_dbscan
-from sklearn.preprocessing import MinMaxScaler
-import matplotlib.cm as cm
-
-    
-    #FALTA ORDERNAR OS VALORES COMO DIZ NO ENUNCIADO
-    from sklearn.neighbors import NearestNeighbors
-    neigh = NearestNeighbors(n_neighbors=5)
-    nbrs = neigh.fit(X)
-    distances, indices = nbrs.kneighbors(X)
-    distances = np.sort(distances, axis=0)
-    distances = distances[:,1]
-    plt.figure(figsize=(20,10))
-    plt.plot(distances)
-    plt.title('K-distance Graph',fontsize=20)
-    plt.xlabel('Data Points sorted by distance',fontsize=14)
-    plt.ylabel('Epsilon',fontsize=14)
-    plt.savefig( 'plots/{}-with-{}-dbscan' + str(epsilon) + '-{}.png')
- """   """colors= ['red', 'blue', "tan", "green", "plum", "m", "sienna", "slategray", "rosybrown", "mediumturquoise", "coral", "y", "olive", "grey", "lightgray"] "
- """"if(np.nanmax(ys_labels_predicted) > 0 and np.nanmax(ys_labels_predicted) < 5): """
-        
-        #plot_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted, centroids, num_clusters = len(clusters_centroids), final_clustering = False)
-"""  for x in range(np.nanmax(ys_labels_predicted)):
-               plt.scatter(xs_features_data[ys_labels_predicted == x, 0], xs_features_data[ys_labels_predicted == x, 1], color = colors[x])
-            # Plot the Centroids of the Clusters, as Scatter Points
-    
-        plt.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = 'black')      
-        # Set the Title of the K-Means Clustering, for K Clusters
-        plt.title( 'DBSCAN Clustering, with K = {} Cluster(s)'.format(epsilon) )     
-            
-        # Save the Plot, as a figure/image
-        plt.savefig( 'imgs/dbscan-clustering-for-{}-clusters-centroids.png'.format(epsilon))
-        """
-  
-""" return ys_labels_predicted, clusters_centroids
-   
-"""
-     
-
-
-
-    
-   
