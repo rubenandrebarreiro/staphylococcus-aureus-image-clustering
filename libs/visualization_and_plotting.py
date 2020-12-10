@@ -278,10 +278,10 @@ def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_m
     return xs_points, ys_points
 
 
-def plot_k_distance_method(clustering_algorithm, points_distances, start_epsilon = 0.01, step_epsilon = 0.01, max_epsilon = 2.0):
+def plot_k_distance_method(clustering_algorithm, points_distances, start_epsilon = 0.001, end_epsilon = 2.0, step_epsilon = 0.001):
     
     # The xs data points ( Epsilons )
-    xs_points = a_range( 0.001, ( max_epsilon + 0.001 ), step_epsilon )
+    xs_points = a_range( start_epsilon, ( end_epsilon + step_epsilon ), step_epsilon )
     
     # The ys data points ( Distances )
     ys_points = points_distances
@@ -300,7 +300,7 @@ def plot_k_distance_method(clustering_algorithm, points_distances, start_epsilon
     py_plot.ylabel('ε (Epsilon Value)')
         
     # Save the Plot, as a figure/image
-    py_plot.savefig( 'imgs/plots/k-distance-method/{}-clustering-elbow-method-for-max-of-{}-clusters.png'.format(clustering_algorithm.lower(), max_epsilon), dpi = 600, bbox_inches = 'tight' )
+    py_plot.savefig( 'imgs/plots/k-distance-method/{}-clustering-elbow-method-for-max-of-{}-clusters.png'.format(clustering_algorithm.lower(), end_epsilon), dpi = 600, bbox_inches = 'tight' )
 
     # Show the Plot
     py_plot.show()

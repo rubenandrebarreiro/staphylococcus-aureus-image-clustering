@@ -5,6 +5,16 @@ Created on Tue Dec  8 11:42:09 2020
 @author: rubenandrebarreiro
 """
 
+# Import zeros,
+# From the NumPy's Python Library,
+# as matrix_array_zeros
+from numpy import zeros as matrix_array_zeros
+
+# Import combinations,
+# From the Iteration Tools' Python Library,
+# as iteration_combinations
+from itertools import combinations as iteration_combinations
+
 # Import cluster.DBSCAN Sub-Module,
 # from SciKit-Learn Python's Library,
 # as dbscan
@@ -15,15 +25,6 @@ from sklearn.metrics import silhouette_score as skl_silhouette_score
 # as k_means
 from sklearn.metrics import adjusted_rand_score as skl_adjusted_rand_score
 
-# Import zeros,
-# From the NumPy's Python Library,
-# as matrix_array_zeros
-from numpy import zeros as matrix_array_zeros
-
-# Import combinations,
-# From the Iteration Tools' Python Library,
-# as iteration_combinations
-from itertools import combinations as iteration_combinations
 
 
 def compute_confusion_matrix_rand_index_clustering(clustering_algorithm, ys_labels_true, ys_labels_predicted, num_clusters, final_clustering = False):
@@ -154,7 +155,7 @@ def compute_clustering_performance_metrics(clustering_algorithm, xs_features, ys
     return silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering
 
 
-def print_clustering_performance_metrics(clustering_algorithm, num_total_clusters, clusters_squared_error_sum_inertia, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+def print_k_means_clustering_performance_metrics(clustering_algorithm, num_total_clusters, clusters_squared_error_sum_inertia, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
     
     print("\n\n")
     
@@ -174,6 +175,34 @@ def print_clustering_performance_metrics(clustering_algorithm, num_total_cluster
             print( " - Rand Index Score: {}".format(clusters_rand_index_scores[ ( current_num_clusters - 1 ) ]) )
             print( " - F1 Score: {}".format(clusters_f1_scores[ ( current_num_clusters - 1 ) ]) )
             print( " - Adjusted Rand Score: {}".format(clusters_adjusted_rand_scores[ ( current_num_clusters - 1 ) ]) )
+        
+        print("\n")
+        
+    print("\n\n")
+    
+    
+def print_dbscan_clustering_performance_metrics(clustering_algorithm, num_epsilons_steps, clusters_num_centroids, clusters_num_inliers, clusters_num_outliers, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+    
+    print("\n\n")
+    
+    for current_epsilon_step in range(num_epsilons_steps):
+        
+        print("\n")
+        
+        print( "Performance Metrics for {} Clustering, with ε (Epsilon) = {}:".format( clustering_algorithm, current_epsilon_step ) )
+        
+        print( " - Number of Cluster(s)/Centroid(s): {}".format(clusters_num_centroids[current_epsilon_step]) )
+        print( " - Number of Inlier(s): {}".format(clusters_num_inliers[current_epsilon_step]) )
+        print( " - Number of Outliers(s): {}".format(clusters_num_outliers[current_epsilon_step]) )
+        
+        if( clusters_num_centroids[current_epsilon_step] >= 2 ):
+            
+            print( " - Silhouette Score: {}".format(clusters_silhouette_scores[current_epsilon_step]) )
+            print( " - Precision Score: {}".format(clusters_precision_scores[current_epsilon_step]) )
+            print( " - Recall Score: {}".format(clusters_recall_scores[current_epsilon_step]) )
+            print( " - Rand Index Score: {}".format(clusters_rand_index_scores[current_epsilon_step]) )
+            print( " - F1 Score: {}".format(clusters_f1_scores[current_epsilon_step]) )
+            print( " - Adjusted Rand Score: {}".format(clusters_adjusted_rand_scores[current_epsilon_step]) )
         
         print("\n")
         

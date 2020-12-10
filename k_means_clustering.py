@@ -25,7 +25,7 @@ from libs.visualization_and_plotting import plot_confusion_matrix_rand_index_clu
 
 from libs.performance_scoring_metrics import compute_clustering_performance_metrics
 
-from libs.performance_scoring_metrics import print_clustering_performance_metrics
+from libs.performance_scoring_metrics import print_k_means_clustering_performance_metrics
 
 
 def k_means_clustering_method(xs_features_data, num_clusters):
@@ -46,7 +46,7 @@ def k_means_clustering_method(xs_features_data, num_clusters):
 
 def k_means_pre_clustering_method(xs_features_data, ys_labels_true, num_total_clusters):
 
-    cluster_squared_errors_sums_intertias = matrix_array_zeros( num_total_clusters )
+    clusters_squared_errors_sums_intertias = matrix_array_zeros( num_total_clusters )
     
     clusters_silhouette_scores = matrix_array_zeros( ( num_total_clusters - 1 ) )
     clusters_precision_scores = matrix_array_zeros( ( num_total_clusters - 1 ) )
@@ -60,7 +60,7 @@ def k_means_pre_clustering_method(xs_features_data, ys_labels_true, num_total_cl
         
         ys_labels_predicted, clusters_centroids, error_k_means_pre_clustering = k_means_clustering_method(xs_features_data, current_num_clusters)
                 
-        cluster_squared_errors_sums_intertias[ ( current_num_clusters - 1 ) ] = error_k_means_pre_clustering
+        clusters_squared_errors_sums_intertias[ ( current_num_clusters - 1 ) ] = error_k_means_pre_clustering
         
         plot_clusters_centroids_and_radii("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = current_num_clusters, final_clustering = False)
         
@@ -81,9 +81,9 @@ def k_means_pre_clustering_method(xs_features_data, ys_labels_true, num_total_cl
             clusters_adjusted_rand_scores[( current_num_clusters - 2 )] = adjusted_rand_score
     
     
-    print_clustering_performance_metrics("K-Means", num_total_clusters, cluster_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
+    print_k_means_clustering_performance_metrics("K-Means", num_total_clusters, clusters_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
     
-    return cluster_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
+    return clusters_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
 
 
 
