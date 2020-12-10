@@ -318,24 +318,13 @@ def build_clusters_centroids_and_radii(xs_features_data, ys_labels_clusters, est
     clusters_centroids = dict()
     clusters_radii = dict()
     
-    print("ZZZZZZZZZZZZ")
-    print(estimator_centroids)
-    print(list(set(ys_labels_clusters)))
-    print("ZZZZZZZZZZZZ")
     
     for num_cluster in list(set(ys_labels_clusters)):
-    
-        #print("AQUIIIII")
-        #print(estimator_centroids)    
-        print(num_cluster)
         
         if(num_cluster >= 0):
             
             clusters_centroids[num_cluster] = list(zip(estimator_centroids[:, 0], estimator_centroids[:, 1]))[num_cluster]
     
-            print("Circunf/Areas")
-            print(clusters_centroids)
-            print("\n\n")
             clusters_radii[num_cluster] = max([norm_number(subtract_numbers(data_point, clusters_centroids[num_cluster])) for data_point in zip(xs_features_data[ys_labels_clusters == num_cluster, 0], xs_features_data[ys_labels_clusters == num_cluster, 1])])
 
 
@@ -348,22 +337,10 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
     
     py_plot.xlabel("Feature Space for the 1st Feature")
     py_plot.ylabel("Feature Space for the 2nd Feature")
-    
-    
-    if(clustering_algorithm == "DBScan"):
-         
-        if(len(estimator_centroids) > 0):
-            
-            print("########")
-            print(estimator_centroids)
-            print("########")
-            print("***********")
-            print(estimator_centroids.shape)
-            print("***********")
      
     clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, estimator_centroids)
     
-    print(num_clusters)
+    
     for current_cluster_i in range(num_clusters):
     
         patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125)

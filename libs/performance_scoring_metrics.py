@@ -10,6 +10,11 @@ Created on Tue Dec  8 11:42:09 2020
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
 
+# Import arange,
+# From the NumPy's Python Library,
+# as a_range
+from numpy import arange as a_range
+
 # Import combinations,
 # From the Iteration Tools' Python Library,
 # as iteration_combinations
@@ -181,15 +186,17 @@ def print_k_means_clustering_performance_metrics(clustering_algorithm, num_total
     print("\n\n")
     
     
-def print_dbscan_clustering_performance_metrics(clustering_algorithm, num_epsilons_steps, clusters_num_centroids, clusters_num_inliers, clusters_num_outliers, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+def print_dbscan_clustering_performance_metrics(clustering_algorithm, start_epsilon, end_epsilon, step_epsilon, clusters_num_centroids, clusters_num_inliers, clusters_num_outliers, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+    
+    current_epsilon_step = 0
     
     print("\n\n")
     
-    for current_epsilon_step in range(num_epsilons_steps):
+    for current_epsilon in a_range(start_epsilon, end_epsilon, step_epsilon):
         
         print("\n")
         
-        print( "Performance Metrics for {} Clustering, with ε (Epsilon) = {}:".format( clustering_algorithm, current_epsilon_step ) )
+        print( "Performance Metrics for {} Clustering, with ε (Epsilon Value) = {}:".format( clustering_algorithm, current_epsilon ) )
         
         print( " - Number of Cluster(s)/Centroid(s): {}".format(clusters_num_centroids[current_epsilon_step]) )
         print( " - Number of Inlier(s): {}".format(clusters_num_inliers[current_epsilon_step]) )
@@ -205,5 +212,7 @@ def print_dbscan_clustering_performance_metrics(clustering_algorithm, num_epsilo
             print( " - Adjusted Rand Score: {}".format(clusters_adjusted_rand_scores[current_epsilon_step]) )
         
         print("\n")
+        
+        current_epsilon_step = ( current_epsilon_step + 1 )
         
     print("\n\n")
