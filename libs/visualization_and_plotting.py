@@ -343,12 +343,12 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
     
     for current_cluster_i in range(num_clusters):
     
-        patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125)
+        patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125, label = "Cluster #{}".format(current_cluster_i))
         ax.add_patch(patch_cluster_area)
         
             
         # Plot the Data (xs Points), as Scatter Points
-        py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Cluster #{}".format(current_cluster_i))
+        py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Points in Cluster #{}".format(current_cluster_i))
         
         
         # Plot the Centroids of the Clusters, as Scatter Points
@@ -358,9 +358,12 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
     if(clustering_algorithm == "DBScan"):
 
         # Plot the Data (xs Points), related to noise (outliers), as Scatter Points
-        py_plot.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = 'black', s = 20, label = "Noise")
+        py_plot.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = 'black', s = 20, label = "Outliers (Noise Points)")
         
     
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, loc = "upper right", frameon = True)
+
     
     # If it is the final K-Means Clustering,
     # with the best K found for the number of Clusters,
@@ -454,15 +457,21 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     
     for current_cluster_i in range(num_clusters):
         
-        patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125)
+        patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125, label = "Cluster #{}".format(current_cluster_i))
         ax2.add_patch(patch_cluster_area)
     
-        ax2.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 30, label = "Cluster #{}".format(current_cluster_i))    
+        ax2.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 30, label = "Points in Cluster #{}".format(current_cluster_i))    
 
 
         if(clustering_algorithm == "DBScan"):
-
-            ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30, label = "Outliers (Noise)")    
+            
+            if(current_cluster_i == ( num_clusters - 1 ) ):
+                    
+                ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30, label = "Outliers (Noise)")    
+            
+            else:
+                
+                ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30)    
             
     
         # Aggregate the silhouette scores for samples belonging to
@@ -515,6 +524,10 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     ax2.set_title("The Visualization of the Clustered Data")
     ax2.set_xlabel("Feature Space for the 1st Feature")
     ax2.set_ylabel("Feature Space for the 2nd Feature")
+    
+    handles, labels = ax2.get_legend_handles_labels()
+    ax2.legend(handles, labels, loc = "upper right", frameon = True)
+
 
     if(final_clustering):
 
