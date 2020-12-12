@@ -225,7 +225,7 @@ data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transf
 intialize_plotting_style('seaborn-dark')
 
 # Generate Analysis' Plots, for several Visualization Plots
-#generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
+generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
 
 
 # The final Features Extracted, to be used, in the Clustering methods,
