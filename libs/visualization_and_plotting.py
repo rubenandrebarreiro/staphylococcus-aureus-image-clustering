@@ -277,6 +277,9 @@ def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_m
     # Set the label for the Y axis of the Plot
     py_plot.ylabel('Errors (Sums of Squared Errors)')
         
+    # Show a Grid on the Plot
+    py_plot.grid()
+        
     # Save the Plot, as a figure/image
     py_plot.savefig( 'imgs/plots/elbow-method/{}-clustering-elbow-method-for-max-of-{}-clusters.png'.format(clustering_algorithm.lower(), num_max_clusters), dpi = 600, bbox_inches = 'tight' )
 
@@ -309,6 +312,9 @@ def plot_k_distance_method(clustering_algorithm, k_neighbors_distances):
     # Set the label for the Y axis of the Plot
     py_plot.ylabel('ε (Epsilon Value)')
         
+    # Show a Grid on the Plot
+    py_plot.grid()
+    
     # Save the Plot, as a figure/image
     py_plot.savefig( 'imgs/plots/k-distance-method/{}-clustering-k-distance-method.png'.format(clustering_algorithm.lower()), dpi = 600, bbox_inches = 'tight' )
 
@@ -388,7 +394,7 @@ def build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predic
 
 def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, final_clustering = False):
      
-    if( ( num_clusters > 0 ) and ( num_clusters < 10 ) ):
+    if( ( num_clusters > 0 ) and ( num_clusters < 13 ) ):
     
         
         figure, ax = py_plot.subplots( 1, figsize = (12, 8) )
@@ -435,7 +441,11 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
         
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles, labels, loc = "upper right", frameon = True)
-    
+        
+        
+        # Show a Grid on the Plot
+        ax.grid()
+        
         
         # If it is the final K-Means Clustering,
         # with the best K found for the number of Clusters,
@@ -545,7 +555,7 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
             
             if(current_cluster_i == ( num_clusters - 1 ) ):
                     
-                ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30, label = "Outliers (Noise)")    
+                ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30, label = "Outliers (Noise Points)")    
             
             else:
                 
@@ -605,6 +615,10 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     
     handles, labels = ax2.get_legend_handles_labels()
     ax2.legend(handles, labels, loc = "upper right", frameon = True)
+    
+    # Show Grids on the Plots
+    ax1.grid()
+    ax2.grid()
 
 
     if(final_clustering):
@@ -681,6 +695,8 @@ def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, co
             
             ax.text(cluster_label, group_label, confusion_matrix_rand_index_clustering[cluster_label, group_label], ha = "center", va = "center", color = "w")
     
+    
+    # Set a Tight Layout for the Plot
     fig.tight_layout()
     
     
@@ -725,3 +741,109 @@ def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, co
 
     # Close the Plot
     py_plot.close()
+    
+    
+    
+def plot_clustering_scores(clustering_algorithm, num_total_clusters, start_epsilon, end_epsilon, step_epsilon, epsilon_values, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+    
+    if(clustering_algorithm == "DBScan"):
+        
+        # The xs data points ( Number of Clusters )
+        xs_points = a_range(start_epsilon, end_epsilon, step_epsilon)
+        
+    else:
+        
+        # The xs data points ( Number of Clusters )
+        xs_points = range( 2, ( num_total_clusters + 1 ) )
+    
+    
+    # The ys data points ( Silhouette Scores )
+    ys_points_silhouette_scores = clusters_silhouette_scores
+    
+    # The ys data points ( Precision Scores )
+    ys_points_precision_scores = clusters_precision_scores
+    
+    # The ys data points ( Recall Scores )
+    ys_points_recall_scores = clusters_recall_scores
+    
+    # The ys data points ( Rand Index Scores )
+    ys_points_rand_index_scores = clusters_rand_index_scores
+    
+    # The ys data points ( F1 Scores )
+    ys_points_f1_scores = clusters_f1_scores
+    
+    # The ys data points ( Adjusted Rand Scores )
+    ys_points_adjusted_rand_scores = clusters_adjusted_rand_scores
+    
+    
+    # Plot the xs data points ( Number of Clusters ) and
+    # their respective ys data points ( Silhouette Scores )
+    py_plot.plot(xs_points, ys_points_silhouette_scores, color = "red", label = "Silhouette Scores")
+    
+    # Plot the xs data points ( Number of Clusters ) and
+    # their respective ys data points ( Precision Scores )
+    py_plot.plot(xs_points, ys_points_precision_scores, color = "green", label = "Precison Scores")
+    
+    # Plot the xs data points ( Number of Clusters ) and
+    # their respective ys data points ( Recall Scores )
+    py_plot.plot(xs_points, ys_points_recall_scores, color = "blue", label = "Recall Scores")
+    
+    # Plot the xs data points ( Number of Clusters ) and
+    # their respective ys data points ( Rand Index Scores )
+    py_plot.plot(xs_points, ys_points_rand_index_scores, color = "orange", label = "Rand Index Scores")
+    
+    # Plot the xs data points ( Number of Clusters ) and
+    # their respective ys data points ( F1 Scores )
+    py_plot.plot(xs_points, ys_points_f1_scores, color = "purple", label = "F1 Scores")
+    
+    # Plot the xs data points ( Number of Clusters ) and
+    # their respective ys data points ( Adjusted Rand Scores )
+    py_plot.plot(xs_points, ys_points_adjusted_rand_scores, color = "dimgray", label = "Adjusted Rand Scores")
+    
+    
+    # Place the Labels (Legend) on the Upper Right corner
+    py_plot.legend(loc = "upper right", frameon = True)
+    
+    
+    # Show a Grid on the Plot
+    py_plot.grid()
+
+
+    # Set the Title of the Performance Metrics/Scores Plot
+    py_plot.title( 'Performance Metrics/Scores for {} Clustering'.format(clustering_algorithm) )
+    
+    
+    if(clustering_algorithm == "DBScan"):
+        
+        # Set the label for the X axis of the Plot
+        py_plot.xlabel('ε (Epsilon Value)')
+        
+    else:
+        
+        # Set the label for the X axis of the Plot
+        py_plot.xlabel('Number of Clusters')
+        
+    
+    # Set the label for the Y axis of the Plot
+    py_plot.ylabel('Performance Metrics/Scores')
+
+        
+    if(clustering_algorithm == "DBScan"):
+        
+        # Save the Plot, as a figure/image
+        py_plot.savefig( 'imgs/plots/{}-clustering-performance-metrics-scores/{}-clustering-performance-metrics-scores-for-max-of-epsilon-value-of-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), end_epsilon), dpi = 600, bbox_inches = 'tight' )
+                
+    else:
+        
+        # Save the Plot, as a figure/image
+        py_plot.savefig( 'imgs/plots/{}-clustering-performance-metrics-scores/{}-clustering-performance-metrics-scores-for-max-of-{}-clusters.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_total_clusters), dpi = 600, bbox_inches = 'tight' )
+
+
+    # Show the Plot
+    py_plot.show()
+
+    # Close the Plot
+    py_plot.close()
+
+    
+    return xs_points, ys_points_silhouette_scores, ys_points_precision_scores, ys_points_recall_scores, ys_points_rand_index_scores, ys_points_f1_scores, ys_points_adjusted_rand_scores
