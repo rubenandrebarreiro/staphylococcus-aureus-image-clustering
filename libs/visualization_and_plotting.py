@@ -15,6 +15,11 @@ from matplotlib import pyplot as py_plot
 # as matplotlib_patches
 from matplotlib import patches as matplotlib_patches
 
+# Import NanMax,
+# From the NumPy's Python Library,
+# as nan_max
+from numpy import nanmax as nan_max
+
 # Import Subtract Sub-Module,
 # From NumPy Python's Library,
 # as subtract_nums
@@ -29,6 +34,11 @@ from numpy import arange as a_range
 # From the NumPy's Python Library,
 # as array_matrix
 from numpy import array as array_matrix
+
+# Import zeros,
+# From the NumPy's Python Library,
+# as matrix_array_zeros
+from numpy import zeros as matrix_array_zeros
 
 # Import LinearAlgebra.Norm Sub-Module,
 # From NumPy Python's Library,
@@ -313,7 +323,7 @@ def plot_k_distance_method(clustering_algorithm, k_neighbors_distances):
     
 
 
-def build_clusters_centroids_and_radii(xs_features_data, ys_labels_clusters, estimator_centroids):
+def build_clusters_centroids_and_radii_k_means(xs_features_data, ys_labels_clusters, estimator_centroids):
     
     clusters_centroids = dict()
     clusters_radii = dict()
@@ -331,90 +341,152 @@ def build_clusters_centroids_and_radii(xs_features_data, ys_labels_clusters, est
     return clusters_centroids, clusters_radii
 
 
+def build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted):
+    
+    num_clusters = nan_max(ys_labels_predicted)
+    current_cluster_i = 0
+    
+    clusters_centroids = None
+    clusters_radii = None
+    
+    
+    if(num_clusters > 0):
+        
+        clusters_centroids = matrix_array_zeros( (num_clusters, 2) )
+        clusters_radii = matrix_array_zeros( (num_clusters) )
+        
+        for current_cluster_i in range(num_clusters):
+            
+            if(current_cluster_i >= 0):
+                
+                cluster_centroid_point_xs = xs_features_data[ys_labels_predicted == current_cluster_i, 0]
+                cluster_centroid_point_ys = xs_features_data[ys_labels_predicted == current_cluster_i, 1]
+                
+                clusters_centroids[current_cluster_i, 0] = sum(cluster_centroid_point_xs)/len(cluster_centroid_point_xs)
+                clusters_centroids[current_cluster_i, 1] = sum(cluster_centroid_point_ys)/len(cluster_centroid_point_ys)
+                
+                
+                centroid_radii_max_value = 0
+                
+                
+                for cluster_centroid_point in range( len(cluster_centroid_point_xs) ):
+                    
+                    distance_1 = pow(clusters_centroids[current_cluster_i, 0] - cluster_centroid_point_xs[cluster_centroid_point], 2)
+                    distance_2 = pow(clusters_centroids[current_cluster_i, 1] - cluster_centroid_point_ys[cluster_centroid_point], 2)
+                    
+                    centroid_radii = pow( distance_1 + distance_2, ( 1/2 ) )
+                    
+                    
+                    if(centroid_radii > centroid_radii_max_value):
+                
+                        centroid_radii_max_value = centroid_radii
+                        clusters_radii[current_cluster_i] = centroid_radii_max_value
+       
+        
+    return clusters_centroids, clusters_radii
+
+
 def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, final_clustering = False):
-    
-    figure, ax = py_plot.subplots( 1, figsize = (12, 8) )
-    
-    py_plot.xlabel("Feature Space for the 1st Feature")
-    py_plot.ylabel("Feature Space for the 2nd Feature")
      
-    clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, estimator_centroids)
+    if( ( num_clusters > 0 ) and ( num_clusters < 10 ) ):
     
-    
-    for current_cluster_i in range(num_clusters):
-    
-        patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125, label = "Cluster #{}".format(current_cluster_i))
-        ax.add_patch(patch_cluster_area)
         
+        figure, ax = py_plot.subplots( 1, figsize = (12, 8) )
+    
+        py_plot.xlabel("Feature Space for the 1st Feature")
+        py_plot.ylabel("Feature Space for the 2nd Feature")
+         
+        
+        if(clustering_algorithm == "DBScan"):
             
-        # Plot the Data (xs Points), as Scatter Points
-        py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Points in Cluster #{}".format(current_cluster_i))
+            clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted)
         
-        
-        # Plot the Centroids of the Clusters, as Scatter Points
-        py_plot.scatter(estimator_centroids[current_cluster_i][0], estimator_centroids[current_cluster_i, 1], marker = 'D', s = 100, color = 'black')
-        
-        
-    if(clustering_algorithm == "DBScan"):
-
-        # Plot the Data (xs Points), related to noise (outliers), as Scatter Points
-        py_plot.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = 'black', s = 20, label = "Outliers (Noise Points)")
-        
-    
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels, loc = "upper right", frameon = True)
-
-    
-    # If it is the final K-Means Clustering,
-    # with the best K found for the number of Clusters,
-    # from the Elbow Method 
-    if(final_clustering):
-
-        if( ( clustering_algorithm == "DBScan" ) and ( epsilon != None ) ):
-   
-            # Set the Title of the K-Means Clustering, for K Clusters
-            py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s) and ε (Epsilon Value) = {}'.format(clustering_algorithm, num_clusters, epsilon) )           
-        
-            # Save the Plot, as a figure/image
-            py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/final-{}-clustering-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
-
-            
-        else:
                 
-            # Set the Title of the K-Means Clustering, for K Clusters
-            py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )           
-        
-            # Save the Plot, as a figure/image
-            py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/final-{}-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
-
-    
-    # If it is varying the pre K-Means Clustering,
-    # with the a certain K for the number of Clusters
-    else:
-   
-        if( ( clustering_algorithm == "DBScan" ) and ( epsilon != None ) ):
-   
-            # Set the Title of the K-Means Clustering, for K Clusters
-            py_plot.title( '{} Clustering, with K = {} Cluster(s) and ε (Epsilon Value) = {}'.format(clustering_algorithm, num_clusters, epsilon) )     
-            
-            # Save the Plot, as a figure/image
-            py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/pre-{}-clustering-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
-                
-   
         else:
-    
-            # Set the Title of the K-Means Clustering, for K Clusters
-            py_plot.title( '{} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )     
+        
+            clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_k_means(xs_features_data, ys_labels_predicted, estimator_centroids)
             
-            # Save the Plot, as a figure/image
-            py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/pre-{}-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
     
+        for current_cluster_i in range(num_clusters):
+        
+            patch_cluster_area = matplotlib_patches.Circle(clusters_centroids[current_cluster_i], clusters_radii[current_cluster_i], edgecolor = 'black', facecolor = COLORS_MATPLOTLIB[current_cluster_i], fill = True, alpha = 0.125, label = "Cluster #{}".format(current_cluster_i))
+            ax.add_patch(patch_cluster_area)
+            
+                
+            # Plot the Data (xs Points), as Scatter Points
+            py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Points in Cluster #{}".format(current_cluster_i))
+            
+            if(clustering_algorithm == "DBScan"):
 
-    # Show the Plot
-    py_plot.show()
+                # Plot the Centroids of the Clusters, as Scatter Points
+                py_plot.scatter(clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = 'D', s = 100, color = 'dimgray')                
 
-    # Close the Plot
-    py_plot.close()
+            else:
+
+                # Plot the Centroids of the Clusters, as Scatter Points
+                py_plot.scatter(estimator_centroids[current_cluster_i][0], estimator_centroids[current_cluster_i, 1], marker = 'D', s = 100, color = 'dimgray')
+            
+            
+        if(clustering_algorithm == "DBScan"):
+    
+            # Plot the Data (xs Points), related to noise (outliers), as Scatter Points
+            py_plot.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = 'black', s = 20, label = "Outliers (Noise Points)")
+            
+        
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles, labels, loc = "upper right", frameon = True)
+    
+        
+        # If it is the final K-Means Clustering,
+        # with the best K found for the number of Clusters,
+        # from the Elbow Method 
+        if(final_clustering):
+    
+            if( ( clustering_algorithm == "DBScan" ) and ( epsilon != None ) ):
+       
+                # Set the Title of the K-Means Clustering, for K Clusters
+                py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s) and ε (Epsilon Value) = {}'.format(clustering_algorithm, num_clusters, epsilon) )           
+            
+                # Save the Plot, as a figure/image
+                py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/final-{}-clustering-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
+    
+                
+            else:
+                    
+                # Set the Title of the K-Means Clustering, for K Clusters
+                py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )           
+            
+                # Save the Plot, as a figure/image
+                py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/final-{}-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+    
+        
+        # If it is varying the pre K-Means Clustering,
+        # with the a certain K for the number of Clusters
+        else:
+       
+            if( ( clustering_algorithm == "DBScan" ) and ( epsilon != None ) ):
+       
+                # Set the Title of the K-Means Clustering, for K Clusters
+                py_plot.title( '{} Clustering, with K = {} Cluster(s) and ε (Epsilon Value) = {}'.format(clustering_algorithm, num_clusters, epsilon) )     
+                
+                # Save the Plot, as a figure/image
+                py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/pre-{}-clustering-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
+                    
+       
+            else:
+        
+                # Set the Title of the K-Means Clustering, for K Clusters
+                py_plot.title( '{} Clustering, with K = {} Cluster(s)'.format(clustering_algorithm, num_clusters) )     
+                
+                # Save the Plot, as a figure/image
+                py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/pre-{}-clustering-for-{}-clusters-centroids.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters), dpi = 600, bbox_inches = 'tight' )
+        
+    
+        # Show the Plot
+        py_plot.show()
+    
+        # Close the Plot
+        py_plot.close()
 
 
 def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, final_clustering = False):
@@ -450,7 +522,13 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     sample_silhouette_values = skl_silhouette_samples(xs_features_data, ys_labels_predicted)
     
     
-    clusters_centroids, clusters_radii = build_clusters_centroids_and_radii(xs_features_data, ys_labels_predicted, estimator_centroids)
+    if(clustering_algorithm == "DBScan"):
+        
+        clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted)
+        
+    else:
+        
+        clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_k_means(xs_features_data, ys_labels_predicted, estimator_centroids)
     
 
     y_lower = 10
@@ -508,9 +586,9 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
         for current_cluster_i in range(num_clusters):
             
             # Draw white circles at cluster centers
-            ax2.scatter(estimator_centroids[current_cluster_i][0], estimator_centroids[current_cluster_i, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black')
+            ax2.scatter(clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black')
         
-            ax2.scatter(estimator_centroids[current_cluster_i][0], estimator_centroids[current_cluster_i, 1], marker = ( '$%d$' % current_cluster_i ), alpha = 1, s = 50, edgecolor = 'black')
+            ax2.scatter(clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = ( '$%d$' % current_cluster_i ), alpha = 1, s = 50, edgecolor = 'black')
         
     else:
         
