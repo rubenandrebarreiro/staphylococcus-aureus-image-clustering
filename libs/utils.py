@@ -15,6 +15,16 @@ from numpy import zeros as matrix_array_zeros
 # as ordering_sort
 from numpy import sort as ordering_sort
 
+# Import max,
+# From the NumPy's Python Library,
+# as array_matrix_max
+from numpy import max as array_matrix_max
+
+# Import min,
+# From the NumPy's Python Library,
+# as array_matrix_min
+from numpy import min as array_matrix_min
+
 # Import DataFrame Sub-Module,
 # From Pandas Python's Library,
 # as pandas_data_frame
@@ -25,6 +35,16 @@ from pandas import DataFrame as pandas_data_frame
 # as nearest_neighbors
 from sklearn.neighbors import NearestNeighbors as skl_nearest_neighbors
 
+
+def normalize_data(xs_features_data):
+    
+    xs_features_data_max = array_matrix_max(xs_features_data, axis = 0)
+    xs_features_data_min = array_matrix_min(xs_features_data, axis = 0)
+
+    xs_features_data_normalized = ( ( xs_features_data - xs_features_data_min ) / ( xs_features_data_max - xs_features_data_min ) )
+
+    
+    return xs_features_data_normalized
 
 def compute_distances_nearest_neighbors(xs_features_data, num_closest_k_neighbors = 5):
     

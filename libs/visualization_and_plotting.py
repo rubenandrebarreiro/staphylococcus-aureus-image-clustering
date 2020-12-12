@@ -349,7 +349,7 @@ def build_clusters_centroids_and_radii_k_means(xs_features_data, ys_labels_clust
 
 def build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted):
     
-    num_clusters = nan_max(ys_labels_predicted)
+    num_clusters = ( nan_max(ys_labels_predicted) + 1 )
     current_cluster_i = 0
     
     clusters_centroids = None
@@ -368,8 +368,8 @@ def build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predic
                 cluster_centroid_point_xs = xs_features_data[ys_labels_predicted == current_cluster_i, 0]
                 cluster_centroid_point_ys = xs_features_data[ys_labels_predicted == current_cluster_i, 1]
                 
-                clusters_centroids[current_cluster_i, 0] = sum(cluster_centroid_point_xs)/len(cluster_centroid_point_xs)
-                clusters_centroids[current_cluster_i, 1] = sum(cluster_centroid_point_ys)/len(cluster_centroid_point_ys)
+                clusters_centroids[current_cluster_i, 0] = ( sum(cluster_centroid_point_xs) / len(cluster_centroid_point_xs) )
+                clusters_centroids[current_cluster_i, 1] = ( sum(cluster_centroid_point_ys) / len(cluster_centroid_point_ys) )
                 
                 
                 centroid_radii_max_value = 0
@@ -402,6 +402,8 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
         py_plot.xlabel("Feature Space for the 1st Feature")
         py_plot.ylabel("Feature Space for the 2nd Feature")
          
+        py_plot.xlim(-0.3, 1.5)
+        py_plot.ylim(-0.5, 1.25)        
         
         if(clustering_algorithm == "DBScan"):
             
@@ -504,16 +506,10 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     # Create a subplot with 1 row and 2 columns
     fig, (ax1, ax2) = py_plot.subplots(1, 2)
 
+    # Set the Size's Inches for the Figure
+    fig.set_size_inches(24, 8)        
     
-    if(clustering_algorithm == "DBScan"):
-        
-        fig.set_size_inches(24, 8)        
     
-    else:
-    
-        fig.set_size_inches(18, 8)
-
-
     # The 1st subplot is the silhouette plot
     # The silhouette coefficient can range from -1, 1 but in this example all
     # lie within [-0.1, 1]
@@ -522,6 +518,9 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     # The (n_clusters+1)*10 is for inserting blank space between silhouette
     # plots of individual clusters, to demarcate them clearly.
     ax1.set_ylim([0, len(xs_features_data) + (num_clusters + 1) * 10])
+    
+    ax2.set_xlim(-0.3, 1.5)
+    ax2.set_ylim(-0.5, 1.25)  
 
     # The silhouette_score gives the average value for all the samples.
     # This gives a perspective into the density and separation of the formed
@@ -606,6 +605,7 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
         ax2.scatter(estimator_centroids[:, 0], estimator_centroids[:, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black')
     
         for num_cluster_centroid, cluster_centroid in enumerate(estimator_centroids):
+            
             ax2.scatter( cluster_centroid[0], cluster_centroid[1], marker = ( '$%d$' % num_cluster_centroid ), alpha = 1, s = 50, edgecolor = 'black' )
 
     

@@ -97,7 +97,7 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
        
         ys_labels_predicted, clusters_centroids_indices, clusters_centroids_points, clusters_border_points, xs_features_data_inliers, xs_features_data_outliers = dbscan_clustering_method(xs_features_data, current_epsilon, num_closest_k_neighbors = num_closest_k_neighbors)
 
-        num_clusters_centroids = nan_max(ys_labels_predicted)
+        num_clusters_centroids = ( nan_max(ys_labels_predicted) + 1 )
         
         plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
         

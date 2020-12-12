@@ -18,6 +18,8 @@ install_required_system_libraries("kneed")
 
 # - 1) General Libraries:
 
+from libs.utils import normalize_data
+
 from libs.utils import create_data_frames_extraction
 
 from libs.utils import compute_distances_nearest_neighbors
@@ -55,15 +57,6 @@ from numpy import loadtxt as load_txt
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
 
-# Import Pre-Processing Sub-Module,
-# From SciKit Learn's Python's Library,
-# as normalize_data
-from sklearn.preprocessing import normalize as normalize_data
-
-# Import preprocessing.MinMaxScaler Sub-Module,
-# from SciKit-Learn Python's Library,
-# as min_max_scaler
-from sklearn.preprocessing import MinMaxScaler as min_max_scaler
 
 # - 2) Customised Libraries:
 
@@ -338,15 +331,10 @@ error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_bes
 
 # ---- DBScan Clustering ----
 
-# TODO - faz diferença normalizar de novo os dados?!
-min_max_scaler_data = min_max_scaler()
-    
-normalized_data_transformed_xs_best_features_priori = min_max_scaler_data.fit_transform(normalized_data_xs_best_features_priori)
-
-k_neighbors_distances = compute_distances_nearest_neighbors(normalized_data_transformed_xs_best_features_priori, num_closest_k_neighbors = NUM_K_NEAREST_NEIGHBORS)
+k_neighbors_distances = compute_distances_nearest_neighbors(normalized_data_xs_best_features_priori, num_closest_k_neighbors = NUM_K_NEAREST_NEIGHBORS)
 
 k_neighbors_distances = plot_k_distance_method("DBScan", k_neighbors_distances)
 
-dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering_method(normalized_data_transformed_xs_best_features_priori, ys_labels_true, start_epsilon = START_EPSILON, end_epsilon = END_EPSILON, step_epsilon = STEP_EPSILON)
+dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, start_epsilon = START_EPSILON, end_epsilon = END_EPSILON, step_epsilon = STEP_EPSILON)
 
 # ---- DBScan Clustering ----
