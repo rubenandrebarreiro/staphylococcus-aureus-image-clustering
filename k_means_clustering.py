@@ -22,6 +22,8 @@ from libs.visualization_and_plotting import plot_silhouette_analysis
 
 from libs.visualization_and_plotting import plot_confusion_matrix_rand_index_clustering_heatmap
 
+from libs.visualization_and_plotting import plot_clustering_scores
+
 
 from libs.performance_scoring_metrics import compute_clustering_performance_metrics
 
@@ -82,6 +84,9 @@ def k_means_pre_clustering_method(xs_features_data, ys_labels_true, num_total_cl
     
     
     print_k_means_clustering_performance_metrics("K-Means", num_total_clusters, clusters_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
+    
+    plot_clustering_scores("K-Means", num_total_clusters, 0, 0, 0, None, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
+    
     
     return clusters_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
 
