@@ -39,6 +39,8 @@ from libs.visualization_and_plotting import plot_silhouette_analysis
 
 from libs.visualization_and_plotting import plot_confusion_matrix_rand_index_clustering_heatmap
 
+from libs.visualization_and_plotting import plot_clustering_scores
+
 
 from libs.performance_scoring_metrics import compute_clustering_performance_metrics
 
@@ -77,7 +79,7 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
     
     num_epsilons_steps = int( ( end_epsilon - start_epsilon ) / step_epsilon )
     
-    
+    clusters_epsilon_values = matrix_array_zeros( num_epsilons_steps )
     clusters_num_centroids = matrix_array_zeros( num_epsilons_steps )
     
     clusters_num_inliers = matrix_array_zeros( num_epsilons_steps )
@@ -134,6 +136,8 @@ def dbscan_pre_clustering_method(xs_features_data, ys_labels_true, num_closest_k
     
     
     print_dbscan_clustering_performance_metrics("DBScan", start_epsilon, end_epsilon, step_epsilon, clusters_num_centroids, clusters_num_inliers, clusters_num_outliers, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
+    
+    plot_clustering_scores("DBScan", 0, start_epsilon, end_epsilon, step_epsilon, clusters_epsilon_values, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
     
     
     return clusters_num_centroids, clusters_num_inliers, clusters_num_outliers, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
