@@ -30,21 +30,45 @@ from numpy import min as array_matrix_min
 # as pandas_data_frame
 from pandas import DataFrame as pandas_data_frame
 
+# Import F Classifier,
+# From the Feature Selection Module
+# of the SciKit-Learn's Python Library,
+# as f_value_features
+from sklearn.feature_selection import f_classif as f_value_features
+
 # Import Neighbors.NearestNeighbors Sub-Module,
 # from SciKit-Learn Python's Library,
 # as nearest_neighbors
 from sklearn.neighbors import NearestNeighbors as skl_nearest_neighbors
 
 
-def normalize_data(xs_features_data):
-    
-    xs_features_data_max = array_matrix_max(xs_features_data, axis = 0)
-    xs_features_data_min = array_matrix_min(xs_features_data, axis = 0)
+def normalize_data(xs_data_points):
+        
+    xs_data_points_max = array_matrix_max(xs_data_points, axis = 0)
+    xs_data_points_min = array_matrix_min(xs_data_points, axis = 0)
 
-    xs_features_data_normalized = ( ( xs_features_data - xs_features_data_min ) / ( xs_features_data_max - xs_features_data_min ) )
+    xs_data_points_normalized = ( ( xs_data_points - xs_data_points_min ) / ( xs_data_points_max - xs_data_points_min ) )
 
     
-    return xs_features_data_normalized
+    return xs_data_points_normalized
+
+
+def f_value_anova(xs_features, ys_labels_true):
+    
+    f_test_values, f_test_probabilities = f_value_features(xs_features, ys_labels_true) 
+    
+    
+    return f_test_values, f_test_probabilities
+
+
+def compute_arg_majority(xs_data, threshold_majority):
+    
+    for index in range(len(xs_data)):
+        
+        if(xs_data[index] > threshold_majority):
+            
+            return index
+        
 
 def compute_distances_nearest_neighbors(xs_features_data, num_closest_k_neighbors = 5):
     
@@ -58,10 +82,13 @@ def compute_distances_nearest_neighbors(xs_features_data, num_closest_k_neighbor
     
     k_neighbors_distances = ordering_sort(k_neighbors_distances, axis = 0)
     
-    k_neighbors_distances = k_neighbors_distances[:, 1]
+    k_neighbors_distances_epsilons = k_neighbors_distances[:, 1]
     
     
-    return k_neighbors_distances
+    num_data_points_sorted_by_distance = len(k_neighbors_distances_epsilons)
+    
+    
+    return num_data_points_sorted_by_distance, k_neighbors_distances_epsilons
 
 
 # The Function to create the Data Frames for the Features' Extractions' Datasets 

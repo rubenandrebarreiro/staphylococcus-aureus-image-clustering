@@ -6,21 +6,59 @@
 # -------------------------------------------------------------------#
 
 
+# A) CONSTANTS:
+    
+# The number of features/components to be extracted,
+# from each Features' Extraction method
+NUM_FEATURES_COMPONENTS = 6
+
+# The threshold for the selection of the prior Best Features,
+# from the F-Values, given by the F-Test (F1 Score)
+F_VALUE_THRESHOLD = 10.0
+
+# The maximum number of Clusters for the K-Means Clustering
+NUM_MAX_CLUSTERS = 12
+
+# The number of K Nearest Neighbors
+NUM_K_NEAREST_NEIGHBORS = 5
+
+# The start value of ε (Epsilon), for the DBScan Clustering
+START_EPSILON = 0.01
+
+# The end value of ε (Epsilon), for the DBScan Clustering
+END_EPSILON = 0.28
+
+# The step value of ε (Epsilon), for the DBScan Clustering
+STEP_EPSILON = 0.003
+
+THRESHOLD_MAJORITY = 0.95
+
+KNEED_LIB_IN_USE = False
+
+# -------------------------------------------------------------------#
+
+
+# B) LIBRARIES:
+
 import warnings
+
 warnings.filterwarnings("ignore")
 
-from libs.install_libraries import install_required_system_libraries    
 
-install_required_system_libraries("kneed")
+if(KNEED_LIB_IN_USE):
 
+    from libs.install_libraries import install_required_system_libraries    
+    
+    install_required_system_libraries("kneed")
 
-# A) Libraries Used:
 
 # - 1) General Libraries:
 
 from libs.utils import normalize_data
 
 from libs.utils import create_data_frames_extraction
+
+from libs.utils import f_value_anova
 
 from libs.utils import compute_distances_nearest_neighbors
 
@@ -34,14 +72,18 @@ from libs.visualization_and_plotting import plot_elbow_method
 from libs.visualization_and_plotting import plot_k_distance_method
 
 
-from k_means_clustering import k_means_pre_clustering_method
+from k_means_clustering import find_best_num_clusters
+
+from k_means_clustering import k_means_pre_clustering
 
 from k_means_clustering import k_means_final_clustering
 
 
-from dbscan_clustering import dbscan_pre_clustering_method
+from dbscan_clustering import find_best_distance_epsilon
 
-#from dbscan_clustering import dbscan_final_clustering_method
+from dbscan_clustering import dbscan_pre_clustering
+
+from dbscan_clustering import dbscan_final_clustering
 
 
 from kneed import KneeLocator as knee_locator
@@ -57,6 +99,11 @@ from numpy import loadtxt as load_txt
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
 
+# Import Array,
+# From the NumPy's Python Library,
+# as array_matrix
+from numpy import array as array_matrix
+
 
 # - 2) Customised Libraries:
 
@@ -64,11 +111,6 @@ from numpy import zeros as matrix_array_zeros
 # From the TP2_Aux Customised Python Library,
 # as images_as_matrix
 from libs.tp2_aux import images_as_matrix as images_as_numpy_matrix
-
-# Import report_clusters,
-# From the TP2_Aux Customised Python Library,
-# as html_report_cluster_labels
-from libs.tp2_aux import report_clusters as html_report_cluster_labels
 
 
 # - 3) Libraries for Features Extraction:
@@ -109,36 +151,8 @@ from sklearn.feature_selection import SelectKBest as select_k_best_features
 
 # -------------------------------------------------------------------#
 
-# A) CONSTANTS:
-    
-# The number of features/components to be extracted,
-# from each Features' Extraction method
-NUM_FEATURES_COMPONENTS = 6
 
-# The threshold for the selection of the prior Best Features,
-# from the F-Values, given by the F-Test (F1 Score)
-F_VALUE_THRESHOLD = 10.0
-
-# The maximum number of Clusters for the K-Means Clustering
-NUM_MAX_CLUSTERS = 12
-
-# The number of K Nearest Neighbors
-NUM_K_NEAREST_NEIGHBORS = 5
-
-# The start value of ε (Epsilon), for the DBScan Clustering
-START_EPSILON = 0.01
-
-# The end value of ε (Epsilon), for the DBScan Clustering
-END_EPSILON = 0.28
-
-# The step value of ε (Epsilon), for the DBScan Clustering
-STEP_EPSILON = 0.003
-
-# -------------------------------------------------------------------#
-
-
-
-# B) PROGRAM:
+# C) PROGRAM:
 
 # Step 1:
 # - Initialise the global variables and prepare the data;
@@ -242,41 +256,31 @@ xs_features[:, NUM_FEATURES_COMPONENTS : ( 2 * NUM_FEATURES_COMPONENTS ) ] = tra
 xs_features[:, ( 2 * NUM_FEATURES_COMPONENTS ) : ( 3 * NUM_FEATURES_COMPONENTS ) ] = transformed_xs_images_matrix_isomap
 
 
-def f_value_anova(xs_features, ys_labels_true):
-    
-    f_values, probabilities_f_values = f_value_features(xs_features, ys_labels_true) 
-    
-    
-    return f_values, probabilities_f_values
-
-
-
 # Step 2:
 # - Select the best features, based on a predefined threshold;
 # Select the F-Values and the Probabilities, from the F-Test (F1 Score)
-f_values, probabilities_f_values = f_value_anova(xs_features, ys_labels_true)
+f_test_values, f_test_probabilities = f_value_anova(xs_features, ys_labels_true)
 
 
+print("F-Test (F1 Score) / ANOVA - Values:")
+print(f_test_values)
 print("\n\n")
-print("\n\n-----F Values----")
-print(f_values)
+
+
+print("F-Test (F1 Score) / ANOVA - Probabilities:")
+print(f_test_probabilities)
 print("\n\n")
-print("-----F Values----\n\n")
-print("\n\n-----F Probs----")
-print(probabilities_f_values)
-print("\n\n")
-print("-----F probs----\n\n")
 
 
 # The K Best Features, from the F-Values, given by the F-Test (F1 Score)
 best_features_priori_indexes = []
 
 # For all the indexes of the F-Values, given by the F-Test (F1 Score)
-for current_feature_index in range( len(f_values) ):
+for current_feature_index in range( len(f_test_values) ):
 
     # If the current F-Value is higher than 10,
     # this feature will be considered
-    if( f_values[current_feature_index] >= F_VALUE_THRESHOLD ):
+    if( f_test_values[current_feature_index] >= F_VALUE_THRESHOLD ):
         
         # Append the current index of the Feature
         best_features_priori_indexes.append(current_feature_index)
@@ -309,32 +313,63 @@ if(xs_best_features_priori_1.all() == xs_best_features_priori_2.all()):
 normalized_data_xs_best_features_priori = normalize_data(xs_best_features_priori)
 
 
-
 # ---- K-Means Clustering ----
 
-k_means_squared_errors_sums_intertias, k_means_silhouette_scores, k_means_precision_scores, k_means_recall_scores, k_means_rand_index_scores, k_means_f1_scores, k_means_adjusted_rand_scores = k_means_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
+k_means_squared_errors_sums_intertias, k_means_silhouette_scores, k_means_precision_scores, k_means_recall_scores, k_means_rand_index_scores, k_means_f1_scores, k_means_adjusted_rand_scores = k_means_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
 
-k_means_xs_points_elbow_method, k_means_ys_points_elbow_method = plot_elbow_method("K-Means", k_means_squared_errors_sums_intertias, num_max_clusters = NUM_MAX_CLUSTERS)
+k_means_xs_points_elbow_method = NUM_MAX_CLUSTERS
+k_means_ys_points_elbow_method = k_means_squared_errors_sums_intertias
 
-kneed_locator_elbow = knee_locator(k_means_xs_points_elbow_method, k_means_ys_points_elbow_method, S = 1.0, curve = "convex", direction = "decreasing")
+
+if(KNEED_LIB_IN_USE):
+    
+    kneed_locator_elbow = knee_locator(k_means_xs_points_elbow_method, k_means_ys_points_elbow_method, S = 1.0, curve = "convex", direction = "decreasing")
+
+    best_num_clusters = round(kneed_locator_elbow.elbow, 0)
+    
+else:
+    
+    best_num_clusters = find_best_num_clusters(k_means_ys_points_elbow_method)
 
 
-final_num_clusters = round(kneed_locator_elbow.elbow, 0)
+print( "The best K ( Number of Clusters ), for K-Means Clustering, found:" )
+print( "- {}\n\n".format(best_num_clusters) )
 
-print( "The best K (Number of Clusters), for K-Means Clustering, found:" )
-print( "- {}\n\n".format(final_num_clusters) )
+k_means_xs_points_elbow_method, k_means_ys_points_elbow_method, best_num_clusters = plot_elbow_method("K-Means", k_means_squared_errors_sums_intertias, best_num_clusters, num_max_clusters = NUM_MAX_CLUSTERS)
 
-error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_clusters = final_num_clusters)
+
+error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_clusters = best_num_clusters)
 
 # ---- K-Means Clustering ----
 
 
 # ---- DBScan Clustering ----
 
-k_neighbors_distances = compute_distances_nearest_neighbors(normalized_data_xs_best_features_priori, num_closest_k_neighbors = NUM_K_NEAREST_NEIGHBORS)
+dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, start_epsilon = START_EPSILON, end_epsilon = END_EPSILON, step_epsilon = STEP_EPSILON)
 
-k_neighbors_distances = plot_k_distance_method("DBScan", k_neighbors_distances)
+num_data_points_sorted_by_distance, k_neighbors_distances_epsilons = compute_distances_nearest_neighbors(normalized_data_xs_best_features_priori, num_closest_k_neighbors = NUM_K_NEAREST_NEIGHBORS)
 
-dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering_method(normalized_data_xs_best_features_priori, ys_labels_true, start_epsilon = START_EPSILON, end_epsilon = END_EPSILON, step_epsilon = STEP_EPSILON)
+dbscan_xs_points_k_distance_method = array_matrix( range( num_data_points_sorted_by_distance ) )
+dbscan_ys_points_k_distance_method = k_neighbors_distances_epsilons
+
+
+if(KNEED_LIB_IN_USE):
+    
+    kneed_locator_k_distance = knee_locator(dbscan_xs_points_k_distance_method, dbscan_ys_points_k_distance_method, S = 1.0, curve = "convex", direction = "increasing")
+
+    best_distance_epsilon = dbscan_ys_points_k_distance_method[round(kneed_locator_k_distance.elbow, 0)]
+
+else:
+    
+    best_distance_epsilon = find_best_distance_epsilon(dbscan_ys_points_k_distance_method, THRESHOLD_MAJORITY)
+    
+    
+print( "The best Distance ( ε (Epsilon Value) ), for DBScan, found:" )
+print( "- {}\n\n".format(best_distance_epsilon) )
+
+dbscan_xs_points_k_distance_method, dbscan_ys_points_k_distance_method, best_distance_epsilon = plot_k_distance_method("DBScan", dbscan_xs_points_k_distance_method, k_neighbors_distances_epsilons, best_distance_epsilon)
+
+
+silhouette_score_dbscan_final_clustering, precision_score_dbscan_final_clustering, recall_score_dbscan_final_clustering, rand_index_score_dbscan_final_clustering, f1_score_dbscan_final_clustering, adjusted_rand_score_dbscan_final_clustering, confusion_matrix_rand_index_dbscan_final_clustering = dbscan_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, best_distance_epsilon, num_closest_k_neighbors = 5) 
 
 # ---- DBScan Clustering ----

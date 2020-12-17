@@ -100,7 +100,6 @@ def plot_stacked_histograms(data_frame_transformed_extraction, method, num_compo
     # Close the Plot
     py_plot.close()
 
-# C) PROGRAM:
 
 # The Function to plot the Individual Histograms
 def plot_individual_histograms(data_frame_transformed_extraction, method, num_components = 6, alpha_value = 0.8):
@@ -256,10 +255,10 @@ def generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_fra
     plot_andrews_curves(data_frame_transformed_extraction_isomap, "Isomap", num_components = num_components)
     
 
-def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_max_clusters = 12):
+def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, best_num_clusters, num_max_clusters = 12):
     
     # The xs data points ( Number of Clusters )
-    xs_points = range( 1, ( num_max_clusters + 1 ) )
+    xs_points = array_matrix( range( 1, ( num_max_clusters + 1 ) ) )
     
     # The ys data points ( Errors (Sums of Squared Errors) )
     ys_points = squared_errors_sums_intertias
@@ -267,6 +266,8 @@ def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_m
     # Plot the xs data points ( Number of Clusters ) and
     # their respective ys data points ( Errors (Sums of Squared Errors) )
     py_plot.plot(xs_points, ys_points)
+    
+    py_plot.axvline(x = best_num_clusters, color = "black", linestyle = "--")
     
     # Set the Title of the Elbow Method Plot
     py_plot.title( 'Elbow Method for {} Clustering'.format(clustering_algorithm) )
@@ -290,19 +291,24 @@ def plot_elbow_method(clustering_algorithm, squared_errors_sums_intertias, num_m
     py_plot.close()
 
     
-    return xs_points, ys_points
+    return xs_points, ys_points, best_num_clusters
 
 
 
-def plot_k_distance_method(clustering_algorithm, k_neighbors_distances):
+def plot_k_distance_method(clustering_algorithm, num_data_points_sorted_by_distance, k_neighbors_distances_epsilons, best_distance_epsilon):
     
-    # The ys data points ( K Neighbors' Distances )
-    ys_points = k_neighbors_distances
+    # The xs data points ( Number of Data Points )
+    xs_points = num_data_points_sorted_by_distance
+    
+    # The ys data points ( K Neighbors' Distances / Epsilons )
+    ys_points = k_neighbors_distances_epsilons
     
     # Plot the xs data points ( ε (Epsilons) ) and
     # their respective ys data points ( Distances )
-    py_plot.plot(ys_points)
+    py_plot.plot(xs_points, ys_points)
     
+    py_plot.axhline(y = best_distance_epsilon, color = "black", linestyle = "--")
+        
     # Set the Title of the Elbow Method Plot
     py_plot.title( 'K-Distance Method for {} Clustering'.format(clustering_algorithm) )
     
@@ -325,7 +331,7 @@ def plot_k_distance_method(clustering_algorithm, k_neighbors_distances):
     py_plot.close()
     
     
-    return ys_points
+    return xs_points, ys_points, best_distance_epsilon
     
 
 
