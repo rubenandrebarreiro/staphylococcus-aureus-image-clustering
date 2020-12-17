@@ -10,6 +10,21 @@ Created on Mon Dec  7 13:16:58 2020
 # as matrix_array_zeros
 from numpy import zeros as matrix_array_zeros
 
+# Import arange,
+# From the NumPy's Python Library,
+# as array_matrix
+from numpy import array as array_matrix
+
+# Import diff,
+# From the NumPy's Python Library,
+# as array_diff
+from numpy import diff as array_diff
+
+# Import mean,
+# From the NumPy's Python Library,
+# as array_mean
+from numpy import mean as array_mean
+
 # Import cluster.KMeans Sub-Module,
 # from SciKit-Learn Python's Library,
 # as k_means
@@ -30,6 +45,12 @@ from libs.performance_scoring_metrics import compute_clustering_performance_metr
 from libs.performance_scoring_metrics import print_k_means_clustering_performance_metrics
 
 
+# Import report_clusters,
+# From the TP2_Aux Customised Python Library,
+# as html_report_cluster_labels
+from libs.tp2_aux import report_clusters as html_report_cluster_labels
+
+
 def k_means_clustering_method(xs_features_data, num_clusters):
     
      k_means_clustering = k_means(n_clusters = num_clusters, init = 'k-means++', n_init = 10, max_iter = 300)
@@ -46,7 +67,7 @@ def k_means_clustering_method(xs_features_data, num_clusters):
      return ys_labels_predicted, clusters_centroids, cluster_squared_error_sum_intertia
      
 
-def k_means_pre_clustering_method(xs_features_data, ys_labels_true, num_total_clusters):
+def k_means_pre_clustering(xs_features_data, ys_labels_true, num_total_clusters):
 
     clusters_squared_errors_sums_intertias = matrix_array_zeros( num_total_clusters )
     
@@ -91,7 +112,6 @@ def k_means_pre_clustering_method(xs_features_data, ys_labels_true, num_total_cl
     return clusters_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
 
 
-
 def k_means_final_clustering(xs_features_data, ys_labels_true, num_clusters = 5):
     
     ys_labels_predicted, k_means_estimator_centroids, k_means_final_clustering_error = k_means_clustering_method(xs_features_data, num_clusters)
@@ -108,4 +128,23 @@ def k_means_final_clustering(xs_features_data, ys_labels_true, num_clusters = 5)
             plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", k_means_final_clustering_confusion_matrix_rand_index, num_clusters, epsilon = None, final_clustering = True)
             
     
+    xs_ids_examples = list(range(0, len(ys_labels_predicted)))
+    
+    html_report_cluster_labels(array_matrix(xs_ids_examples), ys_labels_predicted, "k-means.html")
+    
+    
     return k_means_final_clustering_error, k_means_final_clustering_silhouette_score, k_means_final_clustering_precision_score, k_means_final_clustering_recall_score, k_means_final_clustering_rand_index_score, k_means_final_clustering_f1_score, k_means_final_clustering_adjusted_rand_score, k_means_final_clustering_confusion_matrix_rand_index
+
+
+def find_best_num_clusters(dbscan_xs_points_k_distance_method):
+    
+    dbscan_xs_points_variations_k_distance_method = abs(array_diff(dbscan_xs_points_k_distance_method))
+    
+    dbscan_xs_points_variations_mean_k_distance_method = array_mean(dbscan_xs_points_variations_k_distance_method)
+    
+    
+    for current_num_clusters in range(len(dbscan_xs_points_variations_k_distance_method)):
+        
+        if(dbscan_xs_points_variations_k_distance_method[current_num_clusters] < dbscan_xs_points_variations_mean_k_distance_method):
+    
+            return ( current_num_clusters + 1 )
