@@ -78,12 +78,20 @@ from k_means_clustering import k_means_pre_clustering
 
 from k_means_clustering import k_means_final_clustering
 
+from k_means_clustering import bissect_k_means_into_two_sub_clusters
+
+from k_means_clustering import bisecting_k_means_clustering
+
 
 from dbscan_clustering import find_best_distance_epsilon
 
 from dbscan_clustering import dbscan_pre_clustering
 
 from dbscan_clustering import dbscan_final_clustering
+
+
+#from bisecting_k_means_clustering import bisecting_kmeans, kmeans, visualize_clusters
+
 
 
 from kneed import KneeLocator as knee_locator
@@ -178,17 +186,17 @@ ys_labels_true = ids_and_labels[:,1]
 
 # The Identifiers for the samples of Staphycoccus Aureus,
 # provided by Super-Resolution Fluorescence Microscopy Photographies
-xs_ids = ids_and_labels[:,0]
+xs_examples_ids = ids_and_labels[:,0]
 
 # The Identifiers for the samples of Staphycoccus Aureus,
 # provided by Super-Resolution Fluorescence Microscopy Photographies,
 # which are not labelled (Label 0)
-xs_ids_not_labelled_data = xs_ids[ys_labels_true == 0]
+xs_ids_not_labelled_data = xs_examples_ids[ys_labels_true == 0]
 
 # The Identifiers for the samples of Staphycoccus Aureus,
 # provided by Super-Resolution Fluorescence Microscopy Photographies
 # which are labelled (Labels 1, 2, 3 for Celular Phases 1, 2, 3, respectively)
-xs_ids_labelled_data = xs_ids[ys_labels_true != 0]
+xs_ids_labelled_data = xs_examples_ids[ys_labels_true != 0]
 
 
 # Step 2:
@@ -232,7 +240,7 @@ data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transf
 intialize_plotting_style('seaborn-dark')
 
 # Generate Analysis' Plots, for several Visualization Plots
-generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
+#generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
 
 
 # The final Features Extracted, to be used, in the Clustering methods,
@@ -373,3 +381,35 @@ dbscan_xs_points_k_distance_method, dbscan_ys_points_k_distance_method, best_dis
 silhouette_score_dbscan_final_clustering, precision_score_dbscan_final_clustering, recall_score_dbscan_final_clustering, rand_index_score_dbscan_final_clustering, f1_score_dbscan_final_clustering, adjusted_rand_score_dbscan_final_clustering, confusion_matrix_rand_index_dbscan_final_clustering = dbscan_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, best_distance_epsilon, num_closest_k_neighbors = 5) 
 
 # ---- DBScan Clustering ----
+
+
+# ---- Bisecting K-Means ----
+
+clusters_ids, clusters_data, tree_predictions_lists = bisecting_k_means_clustering(normalized_data_xs_best_features_priori, xs_examples_ids, final_num_clusters = 4, max_iterations = 100)
+
+print( "Performing the Bisecting K-Means Clustering Method..." )
+
+"""
+print( "Sub-Clusters resulted from Bisecting K-Means Clustering Method:" )
+print(tree_predictions_lists)
+
+for example_id in range(len(tree_predictions_lists)):
+
+    if( len(tree_predictions_lists) == 1 ):
+        
+        print("[{}]".format(tree_predictions_lists[example_id]))
+        
+    elif( example_id == 0 ):
+        
+        print("[{},".format(tree_predictions_lists[example_id]))
+
+    elif( example_id == ( len(tree_predictions_lists) - 1 ) ):
+                
+        print("{}]".format(tree_predictions_lists[example_id]))
+        
+    else:
+
+        print("{},".format(tree_predictions_lists[example_id]))
+"""
+
+# ---- Bisecting K-Means ----
