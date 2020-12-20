@@ -25,15 +25,6 @@ from numpy import arange as a_range
 # as nan_max
 from numpy import nanmax as nan_max
 
-# Import sort,
-# From the NumPy's Python Library,
-# as array_sort
-from numpy import sort as array_sort
-
-# Import unique,
-# From the NumPy's Python Library,
-# as array_unique
-from numpy import unique as array_unique
 
 from sklearn.cluster import AffinityPropagation as affinity_propagation
 
@@ -49,8 +40,13 @@ from libs.visualization_and_plotting import plot_clustering_scores
 
 from libs.performance_scoring_metrics import compute_clustering_performance_metrics
 
-from libs.performance_scoring_metrics import print_dbscan_clustering_performance_metrics
+from libs.performance_scoring_metrics import print_affinity_propagation_clustering_performance_metrics
 
+
+# Import report_clusters,
+# From the TP2_Aux Customised Python Library,
+# as html_report_cluster_labels
+from libs.tp2_aux import report_clusters as html_report_cluster_labels
 
 
 def affinity_propagation_clustering_method(xs_features_data, damping_value = 0.5, max_iterations = 300):
@@ -75,7 +71,7 @@ def affinity_propagation_pre_clustering(xs_features_data, ys_labels_true, start_
     
     num_damping_steps = int( ( end_damping - start_damping ) / step_damping )
     
-    clusters_epsilon_values = matrix_array_zeros( num_damping_steps )
+    clusters_damping_values = matrix_array_zeros( num_damping_steps )
     clusters_num_centroids = matrix_array_zeros( num_damping_steps )
     
     clusters_silhouette_scores = matrix_array_zeros( num_damping_steps )
@@ -92,18 +88,18 @@ def affinity_propagation_pre_clustering(xs_features_data, ys_labels_true, start_
                 
         num_clusters_centroids = ( nan_max(ys_labels_predicted) + 1 )
         
-        plot_clusters_centroids_and_radii("Affinity-Propagation", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = None, final_clustering = False)
+        plot_clusters_centroids_and_radii("Affinity-Propagation", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = None, damping = current_damping, final_clustering = False)
         
-        clusters_num_centroids[current_damping_step] = num_clusters_centroids
-        
+        clusters_damping_values[current_damping_step] = current_damping        
+        clusters_num_centroids[current_damping_step] = num_clusters_centroids        
         
         if(num_clusters_centroids >= 2):
             
-            plot_silhouette_analysis("Affinity-Propagation", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = None, final_clustering = False)
+            plot_silhouette_analysis("Affinity-Propagation", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = None, damping = current_damping, final_clustering = False)
         
             silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("Affinity-Propagation", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = False)
             
-            plot_confusion_matrix_rand_index_clustering_heatmap("Affinity-Propagation", confusion_matrix_rand_index_clustering, num_clusters_centroids, epsilon = None, final_clustering = False)
+            plot_confusion_matrix_rand_index_clustering_heatmap("Affinity-Propagation", confusion_matrix_rand_index_clustering, num_clusters_centroids, epsilon = None, damping = current_damping, final_clustering = False)
                         
             clusters_silhouette_scores[current_damping_step] = silhouette_score
             clusters_precision_scores[current_damping_step] = precision_score
@@ -123,9 +119,35 @@ def affinity_propagation_pre_clustering(xs_features_data, ys_labels_true, start_
             
         current_damping_step = ( current_damping_step + 1 )
     
-    print_dbscan_clustering_performance_metrics("Affinity-Propagation", start_damping, end_damping, step_damping, clusters_num_centroids, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
+    print_affinity_propagation_clustering_performance_metrics("Affinity-Propagation", start_damping, end_damping, step_damping, clusters_num_centroids, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
     
-    plot_clustering_scores("Affinity-Propagation", 0, start_damping, end_damping, step_damping, clusters_epsilon_values, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
+    plot_clustering_scores("Affinity-Propagation", 0, start_damping, end_damping, step_damping, clusters_damping_values, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
     
     
     return clusters_num_centroids, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
+
+
+def affinity_propagation_final_clustering(xs_features_data, ys_labels_true, best_damping_value = 0.5):
+
+    ys_labels_predicted, clusters_centroids_indices, clusters_centroids_points = affinity_propagation_clustering_method(xs_features_data, damping_value = best_damping_value, max_iterations = 300)
+        
+    num_clusters_centroids = ( nan_max(ys_labels_predicted) + 1 )
+
+    plot_clusters_centroids_and_radii("Affinity-Propagation", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = None, damping = best_damping_value, final_clustering = False)
+        
+
+    if(num_clusters_centroids >= 2):
+
+        plot_silhouette_analysis("Affinity-Propagation", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = None, damping = best_damping_value, final_clustering = True)
+
+        affinity_propagation_final_clustering_silhouette_score, affinity_propagation_final_clustering_precision_score, affinity_propagation_final_clustering_recall_score, affinity_propagation_final_clustering_rand_index_score, affinity_propagation_final_clustering_f1_score, affinity_propagation_final_clustering_adjusted_rand_score, affinity_propagation_final_clustering_confusion_matrix_rand_index = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = True)
+
+        plot_confusion_matrix_rand_index_clustering_heatmap("Affinity-Propagation", affinity_propagation_final_clustering_confusion_matrix_rand_index, num_clusters_centroids, epsilon = None, damping = best_damping_value, final_clustering = True)
+
+
+    xs_ids_examples = list(range(0, len(ys_labels_predicted)))
+    
+    html_report_cluster_labels(array_matrix(xs_ids_examples), ys_labels_predicted, "affinity-propagation.html")
+ 
+    
+    return affinity_propagation_final_clustering_silhouette_score, affinity_propagation_final_clustering_precision_score, affinity_propagation_final_clustering_recall_score, affinity_propagation_final_clustering_rand_index_score, affinity_propagation_final_clustering_f1_score, affinity_propagation_final_clustering_adjusted_rand_score, affinity_propagation_final_clustering_confusion_matrix_rand_index
