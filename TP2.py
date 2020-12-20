@@ -22,6 +22,7 @@ NUM_MAX_CLUSTERS = 12
 # The number of K Nearest Neighbors
 NUM_K_NEAREST_NEIGHBORS = 5
 
+
 # The start value of ε (Epsilon), for the DBScan Clustering
 START_EPSILON = 0.01
 
@@ -31,7 +32,20 @@ END_EPSILON = 0.28
 # The step value of ε (Epsilon), for the DBScan Clustering
 STEP_EPSILON = 0.003
 
+# The Threshold of Majority of Density Probabilities, on the DBScan Clustering
 THRESHOLD_MAJORITY = 0.95
+
+
+# The start value of γ (Damping Value), for the Affinity Propagation Clustering
+START_DAMPING = 0.5
+
+# The end value of γ (Damping Value), for the Affinity Propagation Clustering
+END_DAMPING = 0.999999
+
+# The step value of γ (Damping Value), for the Affinity Propagation Clustering
+STEP_DAMPING = 0.05
+
+
 
 KNEED_LIB_IN_USE = False
 
@@ -78,8 +92,6 @@ from k_means_clustering import k_means_pre_clustering
 
 from k_means_clustering import k_means_final_clustering
 
-from k_means_clustering import bissect_k_means_into_two_sub_clusters
-
 from k_means_clustering import bisecting_k_means_clustering
 
 
@@ -90,7 +102,9 @@ from dbscan_clustering import dbscan_pre_clustering
 from dbscan_clustering import dbscan_final_clustering
 
 
-#from bisecting_k_means_clustering import bisecting_kmeans, kmeans, visualize_clusters
+from affinity_propagation_clustering import affinity_propagation_pre_clustering
+
+from affinity_propagation_clustering import affinity_propagation_final_clustering
 
 
 
@@ -322,7 +336,7 @@ normalized_data_xs_best_features_priori = normalize_data(xs_best_features_priori
 
 
 # ---- K-Means Clustering ----
-
+"""
 k_means_squared_errors_sums_intertias, k_means_silhouette_scores, k_means_precision_scores, k_means_recall_scores, k_means_rand_index_scores, k_means_f1_scores, k_means_adjusted_rand_scores = k_means_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
 
 k_means_xs_points_elbow_method = NUM_MAX_CLUSTERS
@@ -347,12 +361,12 @@ k_means_xs_points_elbow_method, k_means_ys_points_elbow_method, best_num_cluster
 
 
 error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_clusters = best_num_clusters)
-
+"""
 # ---- K-Means Clustering ----
 
 
 # ---- DBScan Clustering ----
-
+"""
 dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, start_epsilon = START_EPSILON, end_epsilon = END_EPSILON, step_epsilon = STEP_EPSILON)
 
 num_data_points_sorted_by_distance, k_neighbors_distances_epsilons = compute_distances_nearest_neighbors(normalized_data_xs_best_features_priori, num_closest_k_neighbors = NUM_K_NEAREST_NEIGHBORS)
@@ -379,16 +393,16 @@ dbscan_xs_points_k_distance_method, dbscan_ys_points_k_distance_method, best_dis
 
 
 silhouette_score_dbscan_final_clustering, precision_score_dbscan_final_clustering, recall_score_dbscan_final_clustering, rand_index_score_dbscan_final_clustering, f1_score_dbscan_final_clustering, adjusted_rand_score_dbscan_final_clustering, confusion_matrix_rand_index_dbscan_final_clustering = dbscan_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, best_distance_epsilon, num_closest_k_neighbors = 5) 
-
+"""
 # ---- DBScan Clustering ----
 
 
 # ---- Bisecting K-Means ----
-
+"""
 clusters_ids, clusters_data, tree_predictions_lists = bisecting_k_means_clustering(normalized_data_xs_best_features_priori, xs_examples_ids, final_num_clusters = 4, max_iterations = 100)
 
 print( "Performing the Bisecting K-Means Clustering Method..." )
-
+"""
 """
 print( "Sub-Clusters resulted from Bisecting K-Means Clustering Method:" )
 print(tree_predictions_lists)
@@ -413,3 +427,12 @@ for example_id in range(len(tree_predictions_lists)):
 """
 
 # ---- Bisecting K-Means ----
+
+
+# ---- Affinity Propagation ----
+
+affinity_propagation_num_centroids, affinity_propagation_silhouette_scores, affinity_propagation_precision_scores, affinity_propagation_recall_scores, affinity_propagation_rand_index_scores, affinity_propagation_f1_scores, affinity_propagation_adjusted_rand_scores = affinity_propagation_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, start_damping = START_DAMPING, end_damping = END_DAMPING, step_damping = STEP_DAMPING)
+
+affinity_propagation_final_clustering_silhouette_score, affinity_propagation_final_clustering_precision_score, affinity_propagation_final_clustering_recall_score, affinity_propagation_final_clustering_rand_index_score, affinity_propagation_final_clustering_f1_score, affinity_propagation_final_clustering_adjusted_rand_score, affinity_propagation_final_clustering_confusion_matrix_rand_index = affinity_propagation_final_clustering(xs_best_features_priori, ys_labels_true, best_damping_value = 0.5)
+
+# ---- Affinity Propagation ----

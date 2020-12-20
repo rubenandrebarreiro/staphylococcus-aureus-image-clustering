@@ -353,7 +353,7 @@ def build_clusters_centroids_and_radii_k_means(xs_features_data, ys_labels_clust
     return clusters_centroids, clusters_radii
 
 
-def build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted):
+def build_clusters_centroids_and_radii_dbscan_or_affinity_propagation(xs_features_data, ys_labels_predicted):
     
     num_clusters = ( nan_max(ys_labels_predicted) + 1 )
     current_cluster_i = 0
@@ -396,9 +396,9 @@ def build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predic
        
         
     return clusters_centroids, clusters_radii
+    
 
-
-def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, final_clustering = False):
+def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, damping = None, final_clustering = False):
      
     if( ( num_clusters > 0 ) and ( num_clusters < 13 ) ):
     
@@ -411,11 +411,12 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
         py_plot.xlim(-0.3, 1.5)
         py_plot.ylim(-0.5, 1.25)        
         
-        if(clustering_algorithm == "DBScan"):
-            
-            clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted)
         
-                
+        if( ( clustering_algorithm == "DBScan" ) or ( clustering_algorithm == "Affinity-Propagation" ) ):
+            
+            clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_dbscan_or_affinity_propagation(xs_features_data, ys_labels_predicted)
+            
+            
         else:
         
             clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_k_means(xs_features_data, ys_labels_predicted, estimator_centroids)
@@ -430,11 +431,13 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
             # Plot the Data (xs Points), as Scatter Points
             py_plot.scatter(xs_features_data[ys_labels_predicted == current_cluster_i, 0], xs_features_data[ys_labels_predicted == current_cluster_i, 1], color = COLORS_MATPLOTLIB[current_cluster_i], s = 20, label = "Points in Cluster #{}".format(current_cluster_i))
             
-            if(clustering_algorithm == "DBScan"):
+            
+            if( ( clustering_algorithm == "DBScan" ) or ( clustering_algorithm == "Affinity-Propagation" ) ):
 
                 # Plot the Centroids of the Clusters, as Scatter Points
-                py_plot.scatter(clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = 'D', s = 100, color = 'dimgray')                
-
+                py_plot.scatter(clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = 'D', s = 100, color = 'dimgray')       
+                
+                
             else:
 
                 # Plot the Centroids of the Clusters, as Scatter Points
@@ -462,12 +465,21 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
     
             if( ( clustering_algorithm == "DBScan" ) and ( epsilon != None ) ):
        
-                # Set the Title of the K-Means Clustering, for K Clusters
+                # Set the Title of the DBScan Clustering, for an ε (Epsilon Value)
                 py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s) and ε (Epsilon Value) = {}'.format(clustering_algorithm, num_clusters, epsilon) )           
             
                 # Save the Plot, as a figure/image
                 py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/final-{}-clustering-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
     
+            
+            elif( ( clustering_algorithm == "Affinity-Propagation" ) and ( damping != None ) ):
+       
+                # Set the Title of the Affinity Propagation Clustering, for a γ (Damping Value)
+                py_plot.title( 'Final/Best {} Clustering, with K = {} Cluster(s) and γ (Damping Value) = {}'.format(clustering_algorithm, num_clusters, damping) )           
+            
+                # Save the Plot, as a figure/image
+                py_plot.savefig( 'imgs/plots/final-{}-clustering-centroids/final-{}-clustering-for-{}-clusters-centroids-and-damping-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, damping), dpi = 600, bbox_inches = 'tight' )
+                
                 
             else:
                     
@@ -484,11 +496,20 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
        
             if( ( clustering_algorithm == "DBScan" ) and ( epsilon != None ) ):
        
-                # Set the Title of the K-Means Clustering, for K Clusters
+                # Set the Title of the DBScan Clustering, for an ε (Epsilon Value)
                 py_plot.title( '{} Clustering, with K = {} Cluster(s) and ε (Epsilon Value) = {}'.format(clustering_algorithm, num_clusters, epsilon) )     
                 
                 # Save the Plot, as a figure/image
                 py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/pre-{}-clustering-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
+              
+                
+            elif( ( clustering_algorithm == "Affinity-Propagation" ) and ( damping != None ) ):
+       
+                # Set the Title of the Affinity-Propagation Clustering, for a γ (Damping Value)
+                py_plot.title( '{} Clustering, with K = {} Cluster(s) and γ (Damping Value) = {}'.format(clustering_algorithm, num_clusters, damping) )     
+                
+                # Save the Plot, as a figure/image
+                py_plot.savefig( 'imgs/plots/pre-{}-clustering-centroids/pre-{}-clustering-for-{}-clusters-centroids-and-damping-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, damping), dpi = 600, bbox_inches = 'tight' )
                     
        
             else:
@@ -507,7 +528,7 @@ def plot_clusters_centroids_and_radii(clustering_algorithm, xs_features_data, ys
         py_plot.close()
 
 
-def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, final_clustering = False):
+def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_predicted, estimator_centroids, num_clusters, epsilon = None, damping = None, final_clustering = False):
     
     # Create a subplot with 1 row and 2 columns
     fig, (ax1, ax2) = py_plot.subplots(1, 2)
@@ -537,15 +558,17 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     sample_silhouette_values = skl_silhouette_samples(xs_features_data, ys_labels_predicted)
     
     
-    if(clustering_algorithm == "DBScan"):
+    if( ( clustering_algorithm == "DBScan" ) or ( clustering_algorithm == "Affinity-Propagation" ) ):
         
-        clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_dbscan(xs_features_data, ys_labels_predicted)
+        clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_dbscan_or_affinity_propagation(xs_features_data, ys_labels_predicted)
+        
         
     else:
         
         clusters_centroids, clusters_radii = build_clusters_centroids_and_radii_k_means(xs_features_data, ys_labels_predicted, estimator_centroids)
-    
+        
 
+    
     y_lower = 10
     
     for current_cluster_i in range(num_clusters):
@@ -560,7 +583,7 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
             
             if(current_cluster_i == ( num_clusters - 1 ) ):
                     
-                ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30, label = "Outliers (Noise Points)")    
+                ax2.scatter(xs_features_data[ys_labels_predicted == -1, 0], xs_features_data[ys_labels_predicted == -1, 1], color = "black", s = 30, label = "Outliers (Noise Points)")
             
             else:
                 
@@ -595,20 +618,22 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
 
     ax1.set_yticks([])  # Clear the yaxis labels / ticks
     ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])    
-
-    if(clustering_algorithm == "DBScan"):
+    
+    
+    if( ( clustering_algorithm == "DBScan" ) or ( clustering_algorithm == "Affinity-Propagation" ) ):
         
         for current_cluster_i in range(num_clusters):
             
             # Draw white circles at cluster centers
-            ax2.scatter(clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black')
+            ax2.scatter( clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black' )
         
-            ax2.scatter(clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = ( '$%d$' % current_cluster_i ), alpha = 1, s = 50, edgecolor = 'black')
+            ax2.scatter( clusters_centroids[current_cluster_i][0], clusters_centroids[current_cluster_i, 1], marker = ( '$%d$' % current_cluster_i ), alpha = 1, s = 50, edgecolor = 'black' )
         
+                    
     else:
         
         # Draw white circles at cluster centers
-        ax2.scatter(estimator_centroids[:, 0], estimator_centroids[:, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black')
+        ax2.scatter( estimator_centroids[:, 0], estimator_centroids[:, 1], marker = 'o', c = "white", alpha = 1, s = 200, edgecolor = 'black' )
     
         for num_cluster_centroid, cluster_centroid in enumerate(estimator_centroids):
             
@@ -637,6 +662,14 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
             py_plot.savefig( 'imgs/plots/final-{}-clustering-silhouette-analysis/final-{}-clustering-silhouette-analysis-for-{}-clusters-centroid-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
                         
             
+        elif( ( clustering_algorithm == "Affinity-Propagation" ) and ( damping != None ) ):
+            
+            py_plot.suptitle( "Final/Best Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s) and γ (Damping Value) = {}".format(clustering_algorithm, num_clusters, damping), fontsize = 14, fontweight = 'bold' )
+    
+            # Save the Plot, as a figure/image
+            py_plot.savefig( 'imgs/plots/final-{}-clustering-silhouette-analysis/final-{}-clustering-silhouette-analysis-for-{}-clusters-centroid-and-damping-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, damping), dpi = 600, bbox_inches = 'tight' )
+                        
+            
         else:
 
             py_plot.suptitle( "Final/Best Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
@@ -655,6 +688,14 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
             py_plot.savefig( 'imgs/plots/pre-{}-clustering-silhouette-analysis/pre-{}-clustering-silhouette-analysis-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
             
             
+        elif( ( clustering_algorithm == "Affinity-Propagation" ) and ( damping != None ) ):
+
+            py_plot.suptitle( "Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s) and γ (Damping Value) = {}".format(clustering_algorithm, num_clusters, damping), fontsize = 14, fontweight = 'bold' )
+    
+            # Save the Plot, as a figure/image
+            py_plot.savefig( 'imgs/plots/pre-{}-clustering-silhouette-analysis/pre-{}-clustering-silhouette-analysis-for-{}-clusters-centroids-and-damping-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, damping), dpi = 600, bbox_inches = 'tight' )
+            
+            
         else:
                 
             py_plot.suptitle( "Silhouette Analysis for {} Clustering, on Sample Data, with K = {} Cluster(s)".format(clustering_algorithm, num_clusters), fontsize = 14, fontweight = 'bold' )
@@ -671,7 +712,7 @@ def plot_silhouette_analysis(clustering_algorithm, xs_features_data, ys_labels_p
     
     
     
-def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, confusion_matrix_rand_index_clustering, num_clusters, epsilon = None, final_clustering = False):
+def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, confusion_matrix_rand_index_clustering, num_clusters, epsilon = None, damping = None, final_clustering = False):
     
     groups_labels = ["Same Group", "Different Group"]
     clusters_labels = ["Same Cluster", "Different Cluster"]
@@ -714,6 +755,14 @@ def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, co
     
             # Save the Plot, as a figure/image
             py_plot.savefig( 'imgs/plots/final-{}-clustering-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
+            
+        
+        elif( ( clustering_algorithm == "Affinity-Propagation" ) and ( damping != None ) ):
+            
+            ax.set_title( "Final/Best Heatmap for {} Clustering, on Sample Data, with K = {} Cluster(s) and γ (Damping Value) = {}".format(clustering_algorithm, num_clusters, damping), fontsize = 14, fontweight = 'bold' )
+    
+            # Save the Plot, as a figure/image
+            py_plot.savefig( 'imgs/plots/final-{}-clustering-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids-and-damping-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, damping), dpi = 600, bbox_inches = 'tight' )
 
 
         else:
@@ -732,7 +781,15 @@ def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, co
     
             # Save the Plot, as a figure/image
             py_plot.savefig( 'imgs/plots/pre-{}-clustering-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids-and-epsilon-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, epsilon), dpi = 600, bbox_inches = 'tight' )
+        
+        
+        if( ( clustering_algorithm == "Affinity-Propagation" ) and ( damping != None ) ):
+            
+            ax.set_title( "Heatmap for {} Clustering, on Sample Data, with K = {} Cluster(s) and γ (Damping Value) = {}".format(clustering_algorithm, num_clusters, damping), fontsize = 14, fontweight = 'bold' )
     
+            # Save the Plot, as a figure/image
+            py_plot.savefig( 'imgs/plots/pre-{}-clustering-heatmaps/{}-clustering-heatmap-for-{}-clusters-centroids-and-damping-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), num_clusters, damping), dpi = 600, bbox_inches = 'tight' )
+        
     
         else:
             
@@ -750,12 +807,17 @@ def plot_confusion_matrix_rand_index_clustering_heatmap(clustering_algorithm, co
     
     
     
-def plot_clustering_scores(clustering_algorithm, num_total_clusters, start_epsilon, end_epsilon, step_epsilon, epsilon_values, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+def plot_clustering_scores(clustering_algorithm, num_total_clusters, start_epsilon, end_epsilon, step_epsilon, epsilon_values, start_damping, end_damping, step_damping, damping_values, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
     
     if(clustering_algorithm == "DBScan"):
         
         # The xs data points ( Number of Clusters )
         xs_points = a_range(start_epsilon, end_epsilon, step_epsilon)
+    
+    elif(clustering_algorithm == "Affinity-Propagation"):
+        
+        # The xs data points ( Number of Clusters )
+        xs_points = a_range(start_damping, end_damping, step_damping)
         
     else:
         
@@ -824,6 +886,11 @@ def plot_clustering_scores(clustering_algorithm, num_total_clusters, start_epsil
         # Set the label for the X axis of the Plot
         py_plot.xlabel('ε (Epsilon Value)')
         
+    elif(clustering_algorithm == "Affinity-Propagation"):
+        
+        # Set the label for the X axis of the Plot
+        py_plot.xlabel('γ (Damping Value)')
+        
     else:
         
         # Set the label for the X axis of the Plot
@@ -838,6 +905,11 @@ def plot_clustering_scores(clustering_algorithm, num_total_clusters, start_epsil
         
         # Save the Plot, as a figure/image
         py_plot.savefig( 'imgs/plots/{}-clustering-performance-metrics-scores/{}-clustering-performance-metrics-scores-for-max-of-epsilon-value-of-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), end_epsilon), dpi = 600, bbox_inches = 'tight' )
+
+    elif(clustering_algorithm == "Affinity-Propagation"):
+        
+        # Save the Plot, as a figure/image
+        py_plot.savefig( 'imgs/plots/{}-clustering-performance-metrics-scores/{}-clustering-performance-metrics-scores-for-max-of-damping-value-of-{}.png'.format(clustering_algorithm.lower(), clustering_algorithm.lower(), end_damping), dpi = 600, bbox_inches = 'tight' )
                 
     else:
         

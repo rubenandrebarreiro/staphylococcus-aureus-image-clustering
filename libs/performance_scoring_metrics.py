@@ -216,3 +216,33 @@ def print_dbscan_clustering_performance_metrics(clustering_algorithm, start_epsi
         current_epsilon_step = ( current_epsilon_step + 1 )
         
     print("\n\n")
+    
+    
+def print_affinity_propagation_clustering_performance_metrics(clustering_algorithm, start_damping, end_damping, step_damping, clusters_num_centroids, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores):
+    
+    current_damping_step = 0
+    
+    print("\n\n")
+    
+    for current_damping in a_range(start_damping, end_damping, step_damping):
+        
+        print("\n")
+        
+        print( "Performance Metrics for {} Clustering, with ε (Damping Value) = {}:".format( clustering_algorithm, current_damping_step ) )
+        
+        print( " - Number of Cluster(s)/Centroid(s): {}".format(clusters_num_centroids[current_damping_step]) )
+        
+        if( clusters_num_centroids[current_damping_step] >= 2 ):
+            
+            print( " - Silhouette Score: {}".format(clusters_silhouette_scores[current_damping_step]) )
+            print( " - Precision Score: {}".format(clusters_precision_scores[current_damping_step]) )
+            print( " - Recall Score: {}".format(clusters_recall_scores[current_damping_step]) )
+            print( " - Rand Index Score: {}".format(clusters_rand_index_scores[current_damping_step]) )
+            print( " - F1 Score: {}".format(clusters_f1_scores[current_damping_step]) )
+            print( " - Adjusted Rand Score: {}".format(clusters_adjusted_rand_scores[current_damping_step]) )
+        
+        print("\n")
+        
+        current_damping_step = ( current_damping_step + 1 )
+        
+    print("\n\n")

@@ -127,21 +127,22 @@ def dbscan_pre_clustering(xs_features_data, ys_labels_true, num_closest_k_neighb
 
         num_clusters_centroids = ( nan_max(ys_labels_predicted) + 1 )
         
-        plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
+        plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = current_epsilon, damping = None, final_clustering = False)
         
-        
+        clusters_epsilon_values[current_epsilon_step] = current_epsilon        
         clusters_num_centroids[current_epsilon_step] = num_clusters_centroids
+        
         clusters_num_inliers[current_epsilon_step] = len(xs_features_data_inliers)
         clusters_num_outliers[current_epsilon_step] = len(xs_features_data_outliers)
         
         
         if(num_clusters_centroids >= 2):
             
-            plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
+            plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = current_epsilon, damping = None, final_clustering = False)
         
             silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = False)
             
-            plot_confusion_matrix_rand_index_clustering_heatmap("DBScan", confusion_matrix_rand_index_clustering, num_clusters_centroids, epsilon = current_epsilon, final_clustering = False)
+            plot_confusion_matrix_rand_index_clustering_heatmap("DBScan", confusion_matrix_rand_index_clustering, num_clusters_centroids, epsilon = current_epsilon, damping = None, final_clustering = False)
             
             
             clusters_silhouette_scores[current_epsilon_step] = silhouette_score
@@ -177,16 +178,16 @@ def dbscan_final_clustering(xs_features_data, ys_labels_true, best_epsilon_value
 
     num_clusters_centroids = ( nan_max(ys_labels_predicted) + 1 )
 
-    plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = best_epsilon_value, final_clustering = True)
+    plot_clusters_centroids_and_radii("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters = num_clusters_centroids, epsilon = best_epsilon_value, damping = None, final_clustering = True)
 
 
     if(num_clusters_centroids >= 2):
 
-        plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = best_epsilon_value, final_clustering = True)
+        plot_silhouette_analysis("DBScan", xs_features_data, ys_labels_predicted, clusters_centroids_points, num_clusters_centroids, epsilon = best_epsilon_value, damping = None, final_clustering = True)
 
         dbscan_final_clustering_silhouette_score, dbscan_final_clustering_precision_score, dbscan_final_clustering_recall_score, dbscan_final_clustering_rand_index_score, dbscan_final_clustering_f1_score, dbscan_final_clustering_adjusted_rand_score, dbscan_final_clustering_confusion_matrix_rand_index = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters_centroids, final_clustering = True)
 
-        plot_confusion_matrix_rand_index_clustering_heatmap("DBScan", dbscan_final_clustering_confusion_matrix_rand_index, num_clusters_centroids, epsilon = best_epsilon_value, final_clustering = True)
+        plot_confusion_matrix_rand_index_clustering_heatmap("DBScan", dbscan_final_clustering_confusion_matrix_rand_index, num_clusters_centroids, epsilon = best_epsilon_value, damping = None, final_clustering = True)
 
 
     xs_ids_examples = list(range(0, len(ys_labels_predicted)))
