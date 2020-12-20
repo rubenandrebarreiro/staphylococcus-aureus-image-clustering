@@ -15,6 +15,16 @@ from numpy import zeros as matrix_array_zeros
 # as ordering_sort
 from numpy import sort as ordering_sort
 
+# Import mean,
+# From the NumPy's Python Library,
+# as array_mean
+from numpy import mean as array_mean
+
+# Import std,
+# From the NumPy's Python Library,
+# as array_std
+from numpy import std as array_std
+
 # Import max,
 # From the NumPy's Python Library,
 # as array_matrix_max
@@ -41,6 +51,15 @@ from sklearn.feature_selection import f_classif as f_value_features
 # as nearest_neighbors
 from sklearn.neighbors import NearestNeighbors as skl_nearest_neighbors
 
+
+def standartize_data(xs_data_points):
+    
+    means = array_mean(xs_data_points, axis = 0)
+    stdevs = array_std(xs_data_points, axis = 0)
+    
+    xs_data_standartized = ( ( xs_data_points - means ) / stdevs )
+
+    return xs_data_standartized
 
 def normalize_data(xs_data_points):
         
