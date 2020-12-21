@@ -1,6 +1,20 @@
 """
-@author: Martim Figueiredo - 42648
-@author: Rúben André Barreiro - 42648
+
+Last update on Sun Nov 20 20:00:00 2020
+
+@student-name: Martim Cevadinha Figueiredo
+@student-email: mc.figueiredo@campus.fct.unl.pt
+@student-number: 52701
+
+@student-name: Ruben Andre Barreiro
+@student-email: r.barreiro@campus.fct.unl.pt
+@student-number: 42648
+
+@degree: Master of Computer Science and Engineering (MIEI)
+
+@college: NOVA School of Science and Technology (FCT NOVA)
+@university: New University of Lisbon (UNL)
+
 """
 
 # -------------------------------------------------------------------#
@@ -40,14 +54,14 @@ THRESHOLD_MAJORITY = 0.95
 START_DAMPING = 0.5
 
 # The end value of γ (Damping Value), for the Affinity Propagation Clustering
-END_DAMPING = 0.999999
+END_DAMPING = 1.0
 
 # The step value of γ (Damping Value), for the Affinity Propagation Clustering
 STEP_DAMPING = 0.05
 
 
-
 KNEED_LIB_IN_USE = False
+
 
 # -------------------------------------------------------------------#
 
@@ -254,7 +268,7 @@ data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transf
 intialize_plotting_style('seaborn-dark')
 
 # Generate Analysis' Plots, for several Visualization Plots
-#generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
+generate_data_analysis_plots(data_frame_transformed_extraction_pca, data_frame_columns_pca, data_frame_transformed_extraction_tsne, data_frame_columns_tsne, data_frame_transformed_extraction_isomap, data_frame_columns_isomap, num_components = NUM_FEATURES_COMPONENTS)
 
 
 # The final Features Extracted, to be used, in the Clustering methods,
@@ -336,7 +350,7 @@ normalized_data_xs_best_features_priori = normalize_data(xs_best_features_priori
 
 
 # ---- K-Means Clustering ----
-"""
+
 k_means_squared_errors_sums_intertias, k_means_silhouette_scores, k_means_precision_scores, k_means_recall_scores, k_means_rand_index_scores, k_means_f1_scores, k_means_adjusted_rand_scores = k_means_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_total_clusters = NUM_MAX_CLUSTERS)
 
 k_means_xs_points_elbow_method = NUM_MAX_CLUSTERS
@@ -361,12 +375,12 @@ k_means_xs_points_elbow_method, k_means_ys_points_elbow_method, best_num_cluster
 
 
 error_k_means_final_clustering = k_means_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, num_clusters = best_num_clusters)
-"""
+
 # ---- K-Means Clustering ----
 
 
 # ---- DBScan Clustering ----
-"""
+
 dbscan_num_centroids, dbscan_num_inliers, dbscan_num_outliers, dbscan_silhouette_scores, dbscan_precision_scores, dbscan_recall_scores, dbscan_rand_index_scores, dbscan_f1_scores, dbscan_adjusted_rand_scores = dbscan_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, start_epsilon = START_EPSILON, end_epsilon = END_EPSILON, step_epsilon = STEP_EPSILON)
 
 num_data_points_sorted_by_distance, k_neighbors_distances_epsilons = compute_distances_nearest_neighbors(normalized_data_xs_best_features_priori, num_closest_k_neighbors = NUM_K_NEAREST_NEIGHBORS)
@@ -389,50 +403,31 @@ else:
 print( "The best Distance ( ε (Epsilon Value) ), for DBScan, found:" )
 print( "- {}\n\n".format(best_distance_epsilon) )
 
-dbscan_xs_points_k_distance_method, dbscan_ys_points_k_distance_method, best_distance_epsilon = plot_k_distance_method("DBScan", dbscan_xs_points_k_distance_method, k_neighbors_distances_epsilons, best_distance_epsilon)
+dbscan_xs_points_k_distance_method, dbscan_ys_points_k_distance_method, best_distance_epsilon = plot_k_distance_method("DBSCAN", dbscan_xs_points_k_distance_method, k_neighbors_distances_epsilons, best_distance_epsilon)
 
 
 silhouette_score_dbscan_final_clustering, precision_score_dbscan_final_clustering, recall_score_dbscan_final_clustering, rand_index_score_dbscan_final_clustering, f1_score_dbscan_final_clustering, adjusted_rand_score_dbscan_final_clustering, confusion_matrix_rand_index_dbscan_final_clustering = dbscan_final_clustering(normalized_data_xs_best_features_priori, ys_labels_true, best_distance_epsilon, num_closest_k_neighbors = 5) 
-"""
+
 # ---- DBScan Clustering ----
 
 
 # ---- Bisecting K-Means ----
-"""
-clusters_ids, clusters_data, tree_predictions_lists = bisecting_k_means_clustering(normalized_data_xs_best_features_priori, xs_examples_ids, final_num_clusters = 4, max_iterations = 100)
 
-print( "Performing the Bisecting K-Means Clustering Method..." )
-"""
-"""
-print( "Sub-Clusters resulted from Bisecting K-Means Clustering Method:" )
-print(tree_predictions_lists)
+clusters_ids, clusters_data, ys_final_labels_predicted, tree_predictions_lists_without_offset, max_num_clusters, effective_num_clusters = bisecting_k_means_clustering(normalized_data_xs_best_features_priori, xs_examples_ids, ys_labels_true, final_max_num_clusters_and_iterations = 4)
 
-for example_id in range(len(tree_predictions_lists)):
-
-    if( len(tree_predictions_lists) == 1 ):
-        
-        print("[{}]".format(tree_predictions_lists[example_id]))
-        
-    elif( example_id == 0 ):
-        
-        print("[{},".format(tree_predictions_lists[example_id]))
-
-    elif( example_id == ( len(tree_predictions_lists) - 1 ) ):
-                
-        print("{}]".format(tree_predictions_lists[example_id]))
-        
-    else:
-
-        print("{},".format(tree_predictions_lists[example_id]))
-"""
+print( "The best final number of Clusters, for Bisecting K-Means, found:" )
+print( "- {} out of a maximum of {}\n\n".format(effective_num_clusters, max_num_clusters) )
 
 # ---- Bisecting K-Means ----
 
 
 # ---- Affinity Propagation ----
 
-affinity_propagation_num_centroids, affinity_propagation_silhouette_scores, affinity_propagation_precision_scores, affinity_propagation_recall_scores, affinity_propagation_rand_index_scores, affinity_propagation_f1_scores, affinity_propagation_adjusted_rand_scores = affinity_propagation_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, start_damping = START_DAMPING, end_damping = END_DAMPING, step_damping = STEP_DAMPING)
+affinity_propagation_num_centroids, affinity_propagation_silhouette_scores, affinity_propagation_precision_scores, affinity_propagation_recall_scores, affinity_propagation_rand_index_scores, affinity_propagation_f1_scores, affinity_propagation_adjusted_rand_scores, some_damping_value = affinity_propagation_pre_clustering(normalized_data_xs_best_features_priori, ys_labels_true, start_damping = START_DAMPING, end_damping = END_DAMPING, step_damping = STEP_DAMPING)
 
-affinity_propagation_final_clustering_silhouette_score, affinity_propagation_final_clustering_precision_score, affinity_propagation_final_clustering_recall_score, affinity_propagation_final_clustering_rand_index_score, affinity_propagation_final_clustering_f1_score, affinity_propagation_final_clustering_adjusted_rand_score, affinity_propagation_final_clustering_confusion_matrix_rand_index = affinity_propagation_final_clustering(xs_best_features_priori, ys_labels_true, best_damping_value = 0.5)
+print( "It was used a final γ (Damping Value), for Affinity Propagation:" )
+print( "- {}\n\n".format(some_damping_value) )
+
+affinity_propagation_final_clustering_silhouette_score, affinity_propagation_final_clustering_precision_score, affinity_propagation_final_clustering_recall_score, affinity_propagation_final_clustering_rand_index_score, affinity_propagation_final_clustering_f1_score, affinity_propagation_final_clustering_adjusted_rand_score, affinity_propagation_final_clustering_confusion_matrix_rand_index = affinity_propagation_final_clustering(xs_best_features_priori, ys_labels_true, best_damping_value = some_damping_value)
 
 # ---- Affinity Propagation ----

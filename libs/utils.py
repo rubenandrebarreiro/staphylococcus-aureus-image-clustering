@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Dec  7 11:45:59 2020
 
-@author: rubenandrebarreiro
+Last update on Sun Nov 20 20:00:00 2020
+
+@student-name: Martim Cevadinha Figueiredo
+@student-email: mc.figueiredo@campus.fct.unl.pt
+@student-number: 52701
+
+@student-name: Ruben Andre Barreiro
+@student-email: r.barreiro@campus.fct.unl.pt
+@student-number: 42648
+
+@degree: Master of Computer Science and Engineering (MIEI)
+
+@college: NOVA School of Science and Technology (FCT NOVA)
+@university: New University of Lisbon (UNL)
+
 """
 
 # Import zeros,
@@ -91,7 +104,6 @@ def compute_arg_majority(xs_data, threshold_majority):
 
 def compute_distances_nearest_neighbors(xs_features_data, num_closest_k_neighbors = 5):
     
-    # TODO - FALTA ORDERNAR OS VALORES COMO DIZ NO ENUNCIADO
     nearest_neighbors = skl_nearest_neighbors(n_neighbors = num_closest_k_neighbors)
     
     neighbors = nearest_neighbors.fit(xs_features_data)

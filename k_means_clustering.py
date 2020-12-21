@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Dec  7 13:16:58 2020
 
-@author: rubenandrebarreiro
+Last update on Sun Nov 20 20:00:00 2020
+
+@student-name: Martim Cevadinha Figueiredo
+@student-email: mc.figueiredo@campus.fct.unl.pt
+@student-number: 52701
+
+@student-name: Ruben Andre Barreiro
+@student-email: r.barreiro@campus.fct.unl.pt
+@student-number: 42648
+
+@degree: Master of Computer Science and Engineering (MIEI)
+
+@college: NOVA School of Science and Technology (FCT NOVA)
+@university: New University of Lisbon (UNL)
+
 """
 
 # Import zeros,
@@ -29,6 +42,11 @@ from numpy import diff as array_diff
 # From the NumPy's Python Library,
 # as array_unique_values
 from numpy import unique as array_unique_values
+
+# Import sort,
+# From the NumPy's Python Library,
+# as array_sort
+from numpy import sort as array_sort
 
 # Import mean,
 # From the NumPy's Python Library,
@@ -103,10 +121,13 @@ def k_means_pre_clustering(xs_features_data, ys_labels_true, num_total_clusters)
         plot_clusters_centroids_and_radii("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, num_clusters = current_num_clusters, epsilon = None, damping = None, final_clustering = False)
         
         
-        if(current_num_clusters >= 2):
+        if( current_num_clusters >= 2 ):
             
-            plot_silhouette_analysis("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, current_num_clusters, epsilon = None, damping = None, final_clustering = False)
+            if( current_num_clusters <= 26 ):
+            
+                plot_silhouette_analysis("K-Means", xs_features_data, ys_labels_predicted, clusters_centroids, current_num_clusters, epsilon = None, damping = None, final_clustering = False)
         
+            
             silhouette_score, precision_score, recall_score, rand_index_score, f1_score, adjusted_rand_score, confusion_matrix_rand_index_clustering = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, current_num_clusters, final_clustering = False)
             
             plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", confusion_matrix_rand_index_clustering, current_num_clusters, epsilon = None, damping = None, final_clustering = False)
@@ -121,7 +142,7 @@ def k_means_pre_clustering(xs_features_data, ys_labels_true, num_total_clusters)
     
     print_k_means_clustering_performance_metrics("K-Means", num_total_clusters, clusters_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
     
-    plot_clustering_scores("K-Means", num_total_clusters, 0, 0, 0, None, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
+    plot_clustering_scores("K-Means", num_total_clusters, None, None, None, None, None, None, None, None, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores)
     
     
     return clusters_squared_errors_sums_intertias, clusters_silhouette_scores, clusters_precision_scores, clusters_recall_scores, clusters_rand_index_scores, clusters_f1_scores, clusters_adjusted_rand_scores
@@ -134,13 +155,15 @@ def k_means_final_clustering(xs_features_data, ys_labels_true, num_clusters = 4)
     plot_clusters_centroids_and_radii("K-Means", xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters = num_clusters, epsilon = None, damping = None, final_clustering = True)
     
     
-    if(num_clusters >= 2):
+    if( num_clusters >= 2 ):
+            
+        if( num_clusters <= 26 ):
             
             plot_silhouette_analysis("K-Means", xs_features_data, ys_labels_predicted, k_means_estimator_centroids, num_clusters, epsilon = None, damping = None, final_clustering = True)
             
-            k_means_final_clustering_silhouette_score, k_means_final_clustering_precision_score, k_means_final_clustering_recall_score, k_means_final_clustering_rand_index_score, k_means_final_clustering_f1_score, k_means_final_clustering_adjusted_rand_score, k_means_final_clustering_confusion_matrix_rand_index = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters, final_clustering = True)
-            
-            plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", k_means_final_clustering_confusion_matrix_rand_index, num_clusters, epsilon = None, damping = None, final_clustering = True)
+        k_means_final_clustering_silhouette_score, k_means_final_clustering_precision_score, k_means_final_clustering_recall_score, k_means_final_clustering_rand_index_score, k_means_final_clustering_f1_score, k_means_final_clustering_adjusted_rand_score, k_means_final_clustering_confusion_matrix_rand_index = compute_clustering_performance_metrics("K-Means", xs_features_data, ys_labels_true, ys_labels_predicted, num_clusters, final_clustering = True)
+        
+        plot_confusion_matrix_rand_index_clustering_heatmap("K-Means", k_means_final_clustering_confusion_matrix_rand_index, num_clusters, epsilon = None, damping = None, final_clustering = True)
             
     
     xs_ids_examples = list(range(0, len(xs_features_data)))
@@ -173,6 +196,7 @@ def bissect_k_means_into_two_sub_clusters(cluster_data_to_be_divided, cluster_ex
     two_sub_clusters_ids = array_unique_values(ys_labels_predicted)    
     two_sub_clusters_examples_ids = []
     two_sub_clusters_data = []
+    two_sub_clusters_centroids= []
     
     ys_labels_predicted_without_offset = ys_labels_predicted
     ys_labels_predicted_with_offset = ys_labels_predicted
@@ -192,30 +216,40 @@ def bissect_k_means_into_two_sub_clusters(cluster_data_to_be_divided, cluster_ex
             
             two_sub_clusters_ids[sub_cluster_id] = ( two_sub_clusters_ids[sub_cluster_id] + right_leaf_cluster_id_offset )
             
+            
+        two_sub_clusters_centroids.append(clusters_centroids[sub_cluster_id])
+        
     
         two_sub_clusters_examples_ids.append(cluster_examples_ids_to_be_divided[ys_labels_predicted == two_sub_clusters_ids[sub_cluster_id]])
         two_sub_clusters_data.append(cluster_data_to_be_divided[ys_labels_predicted == two_sub_clusters_ids[sub_cluster_id]])
         
-    
-    return two_sub_clusters_ids, two_sub_clusters_examples_ids, two_sub_clusters_data, ys_labels_predicted_without_offset, ys_labels_predicted_with_offset, clusters_centroids, cluster_squared_error_sum_intertia
+        
+    return two_sub_clusters_ids, two_sub_clusters_examples_ids, two_sub_clusters_data, two_sub_clusters_centroids, ys_labels_predicted_without_offset, ys_labels_predicted_with_offset, cluster_squared_error_sum_intertia
 
         
         
-def bisecting_k_means_clustering(xs_features_data, examples_ids, final_num_clusters = 2, max_iterations = 100):
+def bisecting_k_means_clustering(xs_features_data, examples_ids, ys_labels_true, final_max_num_clusters_and_iterations = 2):
+    
+    clusters_ids = [0]
     
     clusters_data = [xs_features_data]
     clusters_examples_ids = [examples_ids]
     
-    clusters_ids = [0]
+    clusters_centroids_points = [0]
+    
     num_clusters = 1
     
     
-    tree_predictions_lists = array_empty( (len(xs_features_data), 0) ).tolist()
+    tree_predictions_lists_with_offset = array_empty( (len(xs_features_data), 0) ).tolist()
+    tree_predictions_lists_without_offset = array_empty( (len(xs_features_data), 0) ).tolist()
+   
     
+    ys_labels_predicted_with_offset = None
+    ys_labels_predicted_without_offset = None
     
     current_iteration = 0
     
-    while ( ( num_clusters < final_num_clusters ) and ( current_iteration < max_iterations ) ):
+    while ( num_clusters < final_max_num_clusters_and_iterations ):
        
         cluster_index_with_more_examples = -1
         num_max_examples_in_cluster = -1
@@ -233,48 +267,113 @@ def bisecting_k_means_clustering(xs_features_data, examples_ids, final_num_clust
 
         
         cluster_id_to_be_divided = clusters_ids[cluster_index_with_more_examples]
+        
         cluster_data_to_be_divided = clusters_data[cluster_index_with_more_examples]
         cluster_examples_ids_to_be_divided = clusters_examples_ids[cluster_index_with_more_examples]
         
-        clusters_ids.remove(cluster_id_to_be_divided)
+        cluster_centroid_point_to_be_divided = clusters_centroids_points[cluster_index_with_more_examples]
+        
+        
         clusters_data.remove(cluster_data_to_be_divided)
         clusters_examples_ids.remove(cluster_examples_ids_to_be_divided)
         
         
         if(num_clusters == 1):
 
-            two_sub_clusters_ids, two_sub_clusters_examples_ids, two_sub_clusters_data, ys_labels_predicted_without_offset, ys_labels_predicted_with_offset, clusters_centroids, cluster_squared_error_sum_intertia = bissect_k_means_into_two_sub_clusters(cluster_data_to_be_divided, cluster_examples_ids_to_be_divided, left_leaf_cluster_id_offset = 0, right_leaf_cluster_id_offset = 0)
+            
+            clusters_ids.pop(cluster_id_to_be_divided)
+            clusters_centroids_points.pop(0)
+            
+        else:
+
+            cluster_centroid_point_index = 0
+            
+            cluster_centroid_point_index_triggered = 0
+
+            for cluster_centroid_point in clusters_centroids_points:
+            
+                if( (cluster_centroid_point_to_be_divided == cluster_centroid_point).all() ):
+                    
+                    cluster_centroid_point_index_triggered = cluster_centroid_point_index
+            
+                
+                cluster_centroid_point_index = ( cluster_centroid_point_index + 1 )
+            
+            
+            clusters_centroids_points.pop(cluster_centroid_point_index_triggered)
+            
+        
+        if(num_clusters == 1):
+
+            two_sub_clusters_ids, two_sub_clusters_examples_ids, two_sub_clusters_data, two_sub_clusters_centroids, ys_labels_predicted_without_offset, ys_labels_predicted_with_offset, cluster_squared_error_sum_intertia = bissect_k_means_into_two_sub_clusters(cluster_data_to_be_divided, cluster_examples_ids_to_be_divided, left_leaf_cluster_id_offset = 0, right_leaf_cluster_id_offset = 0)
         
         else:
             
-            two_sub_clusters_ids, two_sub_clusters_examples_ids, two_sub_clusters_data, ys_labels_predicted_without_offset, ys_labels_predicted_with_offset, clusters_centroids, cluster_squared_error_sum_intertia = bissect_k_means_into_two_sub_clusters(cluster_data_to_be_divided, cluster_examples_ids_to_be_divided, left_leaf_cluster_id_offset = cluster_id_to_be_divided, right_leaf_cluster_id_offset = ( num_clusters - 1 ) )            
+            two_sub_clusters_ids, two_sub_clusters_examples_ids, two_sub_clusters_data, two_sub_clusters_centroids, ys_labels_predicted_without_offset, ys_labels_predicted_with_offset, cluster_squared_error_sum_intertia = bissect_k_means_into_two_sub_clusters(cluster_data_to_be_divided, cluster_examples_ids_to_be_divided, left_leaf_cluster_id_offset = cluster_id_to_be_divided, right_leaf_cluster_id_offset = ( num_clusters - 1 ) )            
             
             
-        
-        for sub_cluster_id in range(2):
+        ys_labels_predicted_with_offset_unique = array_sort(array_unique_values(ys_labels_predicted_with_offset))
+
+            
+        for sub_cluster_id in range(2):    
         
             clusters_ids.append(two_sub_clusters_ids[sub_cluster_id])
 
             clusters_data.append(two_sub_clusters_data[sub_cluster_id])
-
             clusters_examples_ids.append(two_sub_clusters_examples_ids[sub_cluster_id])
+        
+            clusters_centroids_points.append(two_sub_clusters_centroids[sub_cluster_id])
             
             
             for example_index in range(len(xs_features_data)):
                 
                 if(example_index in two_sub_clusters_examples_ids[sub_cluster_id]):
                     
-                    tree_predictions_lists[example_index].append(sub_cluster_id)
+                    
+                    if(sub_cluster_id < len(ys_labels_predicted_with_offset_unique)):
+                        
+                        tree_predictions_lists_with_offset[example_index].append(ys_labels_predicted_with_offset_unique[sub_cluster_id])
+                    
+                    
+                    tree_predictions_lists_without_offset[example_index].append(sub_cluster_id)
         
         
         num_clusters = ( num_clusters + 1 )
         
         current_iteration = ( current_iteration + 1 )
         
+     
+    ys_final_labels_predicted = matrix_array_zeros( len(xs_features_data) )
     
-        xs_ids_examples = list(range(0, len(examples_ids)))
+    
+    for example_index in range(len(xs_features_data)):
         
-        html_report_cluster_labels_hierarchical(xs_ids_examples, tree_predictions_lists, "bisecting-k-means-hierarchical.html")
+        last_index = ( len(tree_predictions_lists_with_offset[example_index]) - 1)
+        
+        ys_final_labels_predicted[example_index] = tree_predictions_lists_with_offset[example_index][last_index]
+        
+    
+    clusters_centroids_points = array_matrix(clusters_centroids_points)
+    
+    effective_num_clusters = len(array_unique_values(ys_final_labels_predicted))
+    
+    
+    if( effective_num_clusters >= 2 ):
+            
+        if( effective_num_clusters <= 26 ):
+    
+            plot_clusters_centroids_and_radii("Bisecting-K-Means", xs_features_data, ys_final_labels_predicted, clusters_centroids_points, effective_num_clusters, epsilon = None, damping = None, final_clustering = True)
+    
+            plot_silhouette_analysis("Bisecting-K-Means", xs_features_data, ys_final_labels_predicted, clusters_centroids_points, effective_num_clusters, epsilon = None, damping = None, final_clustering = True)
+            
+        bisecting_k_means_final_clustering_silhouette_score, bisecting_k_means_final_clustering_precision_score, bisecting_k_means_final_clustering_recall_score, bisecting_k_means_final_clustering_rand_index_score, bisecting_k_means_final_clustering_f1_score, bisecting_k_means_final_clustering_adjusted_rand_score, bisecting_k_means_final_clustering_confusion_matrix_rand_index = compute_clustering_performance_metrics("Bisecting-K-Means", xs_features_data, ys_labels_true, ys_final_labels_predicted, effective_num_clusters, final_clustering = True)
+            
+        plot_confusion_matrix_rand_index_clustering_heatmap("Bisecting-K-Means", bisecting_k_means_final_clustering_confusion_matrix_rand_index, effective_num_clusters, epsilon = None, damping = None, final_clustering = True)
+    
+        
+    xs_ids_examples = list(range(0, len(examples_ids)))
+    
+    html_report_cluster_labels_hierarchical(xs_ids_examples, tree_predictions_lists_without_offset, "bisecting-k-means-hierarchical.html")
 
         
-    return clusters_ids, clusters_data, tree_predictions_lists
+    return clusters_ids, clusters_data, ys_final_labels_predicted, tree_predictions_lists_without_offset, num_clusters, effective_num_clusters

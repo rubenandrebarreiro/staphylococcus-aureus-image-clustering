@@ -10,43 +10,148 @@ refers to a test.png image file in the same folder as this document.
 
 QUESTIONS:
 
-Q1: Explain how you selected the best attributes for the clustering phase.
-    In particular, indicate the visualization methods used to explore
-    the extracted attributes and any statistical tests used.
-R1:
+Q1: Explain how you selected the best attributes for the clustering phase. In particular, indicate the visualization methods used to explore the extracted attributes and any statistical tests used.
+    R1: Firstly we extract 18 features using the three methods that were asked:
+    		- Principal Component Analysis (PCA);
+    		- t-Distributed Stochastic Neighbor Embedding (t-SNE);
+    		- Isometric mapping with Isomap;
+	For each extraction method we draw 7 types of plots (Andrew Curves, Box Plots, Individual Histograms, Parallel Coordinates, Scatter Matrix with Diagonal Histograms and Curves, and Stacked Histograms), which can be seen in imgs/plots/data-analysis-visualization folder.
+	Then for those 18 features extracted, we used the F-Test to select the best features based on a threshold defined by us (Threshold = 10.0), we calculated the F test values and probabilities and selected the features that surpass or were equal to the predefined threshold.
+
+isomap-with-6-components-data-andrew-curves.png
+isomap-with-6-components-data-box.png
+isomap-with-6-components-data-individual-histograms-alpha-0.8.png
+isomap-with-6-components-data-parallel-coordinates.png
+isomap-with-6-components-data-scatter-matrix-hist-diagonal-alpha-0.8.png
+isomap-with-6-components-data-scatter-matrix-kde-diagonal-alpha-0.8.png
+isomap-with-6-components-data-stacked-histograms-alpha-0.8.png
+
+pca-with-6-components-data-andrew-curves.png
+pca-with-6-components-data-box.png
+pca-with-6-components-data-individual-histograms-alpha-0.8.png
+pca-with-6-components-data-parallel-coordinates.png
+pca-with-6-components-data-scatter-matrix-hist-diagonal-alpha-0.8.png
+pca-with-6-components-data-scatter-matrix-kde-diagonal-alpha-0.8.png
+pca-with-6-components-data-stacked-histograms-alpha-0.8.png
+
+tsne-with-6-components-data-andrew-curves.png
+tsne-with-6-components-data-box.png
+tsne-with-6-components-data-individual-histograms-alpha-0.8.png
+tsne-with-6-components-data-parallel-coordinates.png
+tsne-with-6-components-data-scatter-matrix-hist-diagonal-alpha-0.8.png
+tsne-with-6-components-data-scatter-matrix-kde-diagonal-alpha-0.8.png
+tsne-with-6-components-data-stacked-histograms-alpha-0.8.png
+
+	From the Plots for the Andrew's Curves, Individual Histograms, Parallel Coordinates, it is possible to observe that the features extracted from Isomap and PCA methods, seems to show a high variance in the data points between classes, in opposition to what happens to the features extracted from the tSNE method, that shows a much lower variance between the data points extracted, between classes, which can give an intuition that the tSNE method to extract features in this problem, can be a not very useful approach.
+	This statement can be reforced by analysing also the Box Plots, which shows that the features extracted from the tSNE method have a very small range of values and can introduce too much outliers (i.e., noise), in comparison to the Isomap and PCA methods. 
 
 
 Q2: After selecting the attributes, did you standardize or normalize the values? Justify your decision.
-R2:
+    R2: The Normalization is a scaling technique in which values are shifted and rescaled so that they end up ranging between 0 and 1. The Standardization is another scaling technique where the values are centered around the mean with an unit standard deviation. This means that the mean of the attribute becomes zero and the resultant distribution has a unit standard deviation.
+
+	Based on this definitions and on the fact that there is no divergence in our examples units (we are not comparig incomparable units, like, per example, height in centimeters and weight in kilograms), but instead of it, we are comparing intensities of pixels data, varying from 0 and 1.
+	Since, some methods for features extraction can also transform the data, we decided to normalize the values of our data after selecting the attributes in order to rescaled the data without changing the distances between points which is also the main reason that we did not standartize our data.
+	One other reason is the fact that the feature values do not fluctuate a lot, that's because features are rows in the image matrix, the images are very similar to each other in terms of size, shape and color and in top of that the segmented region is centered in the image.
 
 
-Q3: Explain how you found the neighborhood radius value (epsilon) for the DBSCAN algorithm by
-    following the procedure described in the article "A density-based algorithm for discovering clusters
-    in large spatial databases with noise".
-R3:
+Q3: Explain how you found the neighborhood radius value (epsilon) for the DBSCAN algorithm by following the procedure described in the article "A density-based algorithm for discovering clusters in large spatial databases with noise".
+    R3: The approach to find the epsilon value for the DBSCAN algorithm described in the article is an interactive aproach, consisting in:
+		- Computing and displaying the 4-dist graph for the data
+		- Estimate the percentage of noise
+		- From that the system derives a proprosal for the threshold point from it which we can use or select a different point as the threshold point at our please.
+
+	Like we explained in Q2, we normalized the data and because of that distances between points were not big, so we decided to fluctuate the epsilon value between 0.01 and 0.50 (with a 0.01 step, between epsilon values). We, then, draw the resulting graph from the K Distance Method, for that range of values for epsilon.
+	After analysing the K-Distance Curve, which shows that the curve start to increase abruptly around the epsilon value of 0.25 (as also, by the number of meaningless plots that were drawn),  we concluded immediately that the 0.50 maximum range value was unnecessary and we decided to split it, approximately, in half, plus some lower value of increment (fixing the final value for espilon, in 0.28).
+	Then, we redraw the resulting graph from the K Distance Method, where we could assume that the best value was somewhere between 0.10 and 0.20, then we calculated the best value for epsilon in two different ways (that had very similar results), just to be sure.
+	
+	For the method described in the article, we compute where the vast majority of the points meet, with a confidence interval of 95%, which gave us a best epsilon value of 0.1454894067157726.
+	In order to reforce this idea, we used the KneeLocator method from Kneed Python's library, just like we did for K-Means Clustering, in order to find the best K value, in the Elbow's Mehtod, which gave us a best epsilon value of 0.14572714795841504.
+
+	We opted to use 0.1454894067157726 for the best epsilon value, plotting a dashed line in the graph, to show it.
+
+dbscan-clustering-k-distance-method.png
+
+Q4: Examining the clusters generated by the DBSCAN algorithm with the value optimized by the method described in the article, do you think the result is adequate to cluster these images? Justify your answer.
+    R4: When we observe the plot generated by the DBSCAN with the previously selected best value for epsilon, we can easily see that the result is not satisfatory, at all. Despite being tolerant to noise, it does not cluster (or, partition) properly the differente phases of the cell,
+and not even, the noisy examples.
+	The graphic for the best value of epsilon shows that it clusters points in the entire region of examples (cluster 0) and the other two clusters are inside that main (cluster 1 and 2), this probably can be explained by the fact that images are very similar to each other.
+	Observing the HTML Report file for the DBSCAN algorithm, we can observe that:
+		- The those noise points are clearly from cellular phases 2 and 3;
+		- The cluster 0 has cells from phase 1 and images that do not correspond to real cells;
+		- The cluster 1 also corresponds to cells that belong to phase 1;
+		- The cluster 2 corresponds to cells that belong to phase 2.
+
+	In conclusion, the DBScan method could not distinguish the cellular phases and outliers (i.e., noise) effectively.
 
 
-Q4: Examining the clusters generated by the DBSCAN algorithm with the value optimized by the 
-    method described in the article, do you think the result is adequate to cluster these images?
-    Justify your answer.
-R4:
+Q5: Describe your analysis of the k (for K-Means) and epsilon (for DBSCAN) parameters using the internal and external indicators referred in the assignment page. Include the two plots of the indicator values â€‹â€‹(indicating the image name of each plot in one line in your answer) as a function of the k and epsilon parameters and explain how you chose the ranges for examining these parameters. Indicate, with justification, what conclusions you can draw from this analysis.
+    R5: For analysing the algorithm parameters we used all six of the indicators refered:
+		- Internal Indicator: Silhouette Score;
+		- External indicators: Precision, Recall, Rand Index, F1 and Adjusted Rand Scores; 
 
+	The Silhouette Score measures how similar an object is to its own cluster compared to other clusters. From this definition and from our Silhouette plots for the K-Means algorithm, we can see that the average Silhouette Score flutuates from 0.5 to 0.6 for every number of clusters and
+has its highest value when the number of clusters is 1 being also very similar, when K is equal 2,3 and 4 clusters, we think that this is a very poor result, probably due to the fact all clusters are overlying each other.
+	Still from the analysis of the Silhouette plots for the DBSCAN algorithm and for the epsilon value, the results are even worse, we have two clusters literally inside the main red cluster, the average silhouette score has its best value, when the number of clusters is 2 and we can also observe that the number of elements on cluster 0 is many times bigger than the other two. We can conclude that the samples are assigned to the wrong cluster.
 
-Q5: Describe your analysis of the k (for K-Means) and epsilon (for DBSCAN) parameters using
-    the internal and external indicators referred in the assignment page. Include the two plots of
-    the indicator values ​​(indicating the image name of each plot in one line in your answer) as
-    a function of the k and epsilon parameters and explain how you chose the ranges for examining these parameters.
-    Indicate, with justification, what conclusions you can draw from this analysis.
-R5:
+	The Precision score is the ability not to label as positive a sample that is negative. For the Precision Score analysis, it is possible to argue that both algoritms perform very well, averaging values between 0.7 and 0.8.
 
-Q6: Select some of the parameter values ​​tested in question five and examine the corresponding clusters more closely, generating the HTML file with the images. Explain how you selected these parameter values, discuss the different options and propose a recommendation that could help the biologists' task of classifying cells and rejecting segmentation errors.
-R6:
+	The Recall Score is the ability to find all the positive samples. For the K-Means algorithm, this score fluctuates from 0.5 to 0.1, in a decreasing way, while increasing the number of clusters, being approximately 0.3 when the number of clusters is the best one. For the DBSCAN algorithm, it varies in a positive parabolic way varying from 0.9 to 0.3 approximately, being 0.7 when epsilon is best one.
+
+	The Rand Index Score measure the similarity between two data clusterings has a similar behavior, as the Recall Score, for both algorithms. The Rand Index Score vary from 0.5 to 0.3 in the K-Means, being 0.4, when K = 4 is the best value, and, for DBSCAN, varying from 0.7 to 0.6 in a positive parabolic way, being approximately 0.6l, when the epsilon is best one.
+
+	With these observations, we can that despite being very precise algorithms they are not very appropriate to help the biologist organize similar images of cells.
+
+final-k-means-clustering-silhouette-analysis-for-4-clusters-centroids.png
+k-means-clustering-performance-metrics-scores-for-max-of-12-clusters.png
+
+final-dbscan-clustering-silhouette-analysis-for-3-clusters-centroid-and-epsilon-0.1426196421362731.png
+dbscan-clustering-performance-metrics-scores-for-max-of-epsilon-value-of-0.28.png
+
+Q6: Select some of the parameter values â€‹â€‹tested in question five and examine the corresponding clusters more closely, generating the HTML file with the images. Explain how you selected these parameter values, discuss the different options and propose a recommendation that could help the biologists' task of classifying cells and rejecting segmentation errors.
+    R6: The Precision and Recall parameter values gives the fractions of how many selected data points are relevant and of how many relevant data points are selected, respectively, which can show how good are the clustering methods, selecting the data points that really matters.
+
+	For example, it is possible to argue that the DBSCAN algorithm are good in this both aspect, selecting relevant data for the clusters, from the real relevant data globally from the dataset, what is plausible, since DBSCAN starts by increasing the epsilon value, based on the distances, and deals well with data points which introduces noise on the data (i.e., outliers).
 
 Q7: Discuss advantages or problems with these two algorithms (K-Means and DBSCAN) for the purpose of helping biologists to organize these images, considering your theoretical knowledge of these algorithms as well as the results you obtained in your work.
-R7:
+    R7: The K-Means algorithm is an iterative algorithm that tries to partition the dataset into distinct non-overlapping sub-groups where each data point belongs to only one group, represented by the closest prototype (i.e., it does not let the data points that are far-away from each other, share the same cluster). It is a simple algorithm which can scale to large datasets, can easily adapt to new examples, as also,
+can generalize to clusters of different shapes and sizes.
+	However, is not suitable for all types of data and has some troubles when partition the data containing outliers (also known as noise), which is what is happening in this case, since some examples of images are damaged.
+	Furthermore, the K-Means algorithm does not let data points that are far away from each other, share the same cluster, even though they obviously belong to the same cluster, it gives more weight to the bigger clusters and, most importantly. in this case, if there is overlapping between clusters, this algorithm does not have an intrinsic measure for uncertainty for the examples belong to the overlapping region in order to determine for which cluster to assign each data point.
+
+	The DBSCAN is a clustering method that is used to separate clusters of high density from clusters of low density. It groups together points that are close to each other, based on a distance measurement, and a minimum number of points. This clustering algorithm, in contrast to K-Means, can handle outliers within the dataset (which is a very good help for this work), in other words, it is noise resistante and can handle clusters of various shapes and sizes.
+	The downside of the DBSCAN is that, it struggles with clusters of similar density and with high dimensionality data.
+
+	Individually speaking, the K-Means clustering method can divide the examples in four differente clusters, although being overlapping its area with the areas of other ones. When observing the HTML Report file for K-Means, we can conclude that there is an explanation for the four clusters. Although, being an algorithm that does not support very well data with outliers (i.e., noise), we can see that some of the images that do not correspond to real cell's phase, lay on cluster 0.
+	Despite that unexpected outcame, the remaining results are not very good, it seems that the algorithm can not distinguish cells at phase 2 and 3 at all, grouping them all, at cluster 2 and the other two clusters seem to be almost all examples belonging to the cell's phase 1 dispite being separated.
+
+	The Dbscan has a poorer performance than the K-Means, even supposedly having tolerance to noise we can observe that the those noise points are clearly from cellular stages 2 and 3, the cluster 0 has cells from stage 1 and images that do not correspond to real cells, cluster 1 also corresponds to cells that belong to stage 1 and cluster 2 corresponds to cells that belong to stage 2. In conclusion this method could not distinguish the cellular stages and outliers effectively.
+
+	We can conclude that neither of the algorithms did a satisfatory job, none of the clustering methods is suitable to help the biologist separate effectively the three different cellular stages.
+
+dbscan.html
+final-dbscan-clustering-for-3-clusters-centroids-and-epsilon-0.1426196420114182.png
+k-means.html
+final-k-means-clustering-for-4-clusters-centroids.png
+example_labels.html
+
 
 Q8: Consider other clustering algorithms embedded in the Scikit-Learn library. Choose one and apply it to this problem, optimizing the parameters you deem appropriate in the way that you find adequate. Justify your choices and discuss whether this option would yield more useful results for biologists.
-R8:
+        R8: We opted to implement the Affinity clustering algorithm due to the fact that we read that this is a completely different approach from K-Means and Dbscan methods. Since the results were poor in those two approaches we decided that it would be a good ideia to test it.
+	In this clustering method each data point communicates with all of the other data points to let each other know how similar they are and that starts to reveal the clusters in the data. You don't have to tell this algorithm how many clusters to expect in the initialization parameters.
+	This particular method has two parameters that we could change: damping and preference. However we only fluctuate the damping parameter since the preference are the points with larger values of preferences that are more likely to be chosen as exemplars and we don't have this kind of information a priori.
+	That being said we fluctuated the damping parameter but it did not change the outcome significatively.
+	Observing the silhouette analysis graphic we can see that the algorithm found 26 different clusters, approximately with the same number of examples each and with the best average silhouette score value of 0.6 when the number of clusters is 2. When we observe the performace metrics graphic we can see that just like in K-Means and Dbscan the precision is very high in oposition of the remaining scores that present really poor results.
+	We also did an html file as we did for the other algorithms to see the images attributed to each cluster. Obviasly, because of the high number of clusters the images seem to be better separated by stages (for example is much more clear the distinction between cellular stages 2 and 3 - clusters 16 and 9 (stage 2) and 17 (stage 3), we can also see that there are some clusters that represent non cellular images (noise), for example clusters 0, 1, 2, 10, 15).
+	In conclusion we think that probably this still isn't a good option to fullfil the biologists needs although with such clear distinction between cellular groups mainly in identifying non cellular images it could be a useful method to rule out the outliers in our data in an early stage of clustering to promote a better performance of other algorithms
+
 
 Q9: (Optional) Implement the Bissecting K-Means hierarchical clustering algorithm as described in the assignment page and Lecture 19. Examine and discuss the results and their application to the problem of helping the biologists select and classify cell images.
-R9:
+     R9:Bissecting K-Means is an example of divisive hierarchical clustering algorithm (which are good at identifying large clusters), it starts by including all objects in a single large cluster. At each step of iteration, the most heterogeneous cluster (i.e., containing more examples) is divided into two, using a clustering process from the K-Means algorithm, with K=2. The process is repeated until it was reached the speficied number of clusters (or, number of iterations), letting all the examples assigned to a cluster.
+
+	This algorithm is derivated from the original K-Means, having some additional advantages, such as:
+		- Is more efficient, when the number of clusters is substencial;
+		- Only the data points of one cluster and two centroids are involved in the computation and the resulting clusters are of similar size.
+
+	We can observe, from the HTML Report file for the bisecting-k-means-hierarchical, that this algorithm can easily distinguish, even though not perfectly, the noisy cells and the cells that are "worth being evaluated".
+	The initial split of all examples from on cluster to two different clusters proves exactly that, we can see that the majority of the segmentations that do not correspond to real cells' phase are assigned to cluster 0 and the remaining ones to the cluster 1. It is also observable that the algorithm can separate cell's phase 1 from the cell's phases 2 and 3.
+	However, the main problem, just like in K-Means, is to cluster cells from cell's phases 2 and 3 separately, and the fact is that, even at, first sight, this cell's phases do not show a great visual difference, sometimes.

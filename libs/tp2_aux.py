@@ -1,5 +1,23 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+
+Last update on Sun Nov 20 20:00:00 2020
+
+@student-name: Martim Cevadinha Figueiredo
+@student-email: mc.figueiredo@campus.fct.unl.pt
+@student-number: 52701
+
+@student-name: Ruben Andre Barreiro
+@student-email: r.barreiro@campus.fct.unl.pt
+@student-number: 42648
+
+@degree: Master of Computer Science and Engineering (MIEI)
+
+@college: NOVA School of Science and Technology (FCT NOVA)
+@university: New University of Lisbon (UNL)
+
+"""
+
 """
 Auxiliary functions for assignment 2
 """

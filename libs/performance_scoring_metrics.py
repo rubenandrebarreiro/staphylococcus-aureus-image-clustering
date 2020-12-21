@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Dec  8 11:42:09 2020
 
-@author: rubenandrebarreiro
+Last update on Sun Nov 20 20:00:00 2020
+
+@student-name: Martim Cevadinha Figueiredo
+@student-email: mc.figueiredo@campus.fct.unl.pt
+@student-number: 52701
+
+@student-name: Ruben Andre Barreiro
+@student-email: r.barreiro@campus.fct.unl.pt
+@student-number: 42648
+
+@degree: Master of Computer Science and Engineering (MIEI)
+
+@college: NOVA School of Science and Technology (FCT NOVA)
+@university: New University of Lisbon (UNL)
+
 """
 
 # Import zeros,
@@ -228,7 +241,7 @@ def print_affinity_propagation_clustering_performance_metrics(clustering_algorit
         
         print("\n")
         
-        print( "Performance Metrics for {} Clustering, with ε (Damping Value) = {}:".format( clustering_algorithm, current_damping_step ) )
+        print( "Performance Metrics for {} Clustering, with γ (Damping Value) = {}:".format( clustering_algorithm, current_damping ) )
         
         print( " - Number of Cluster(s)/Centroid(s): {}".format(clusters_num_centroids[current_damping_step]) )
         
