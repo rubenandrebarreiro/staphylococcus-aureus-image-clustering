@@ -18,29 +18,14 @@ Q1: Explain how you selected the best attributes for the clustering phase. In pa
 	For each extraction method we draw 7 types of plots (Andrew Curves, Box Plots, Individual Histograms, Parallel Coordinates, Scatter Matrix with Diagonal Histograms and Curves, and Stacked Histograms), which can be seen in imgs/plots/data-analysis-visualization folder.
 	Then for those 18 features extracted, we used the F-Test to select the best features based on a threshold defined by us (Threshold = 10.0), we calculated the F test values and probabilities and selected the features that surpass or were equal to the predefined threshold.
 
-isomap-with-6-components-data-andrew-curves.png
 isomap-with-6-components-data-box.png
-isomap-with-6-components-data-individual-histograms-alpha-0.8.png
 isomap-with-6-components-data-parallel-coordinates.png
-isomap-with-6-components-data-scatter-matrix-hist-diagonal-alpha-0.8.png
-isomap-with-6-components-data-scatter-matrix-kde-diagonal-alpha-0.8.png
-isomap-with-6-components-data-stacked-histograms-alpha-0.8.png
 
-pca-with-6-components-data-andrew-curves.png
 pca-with-6-components-data-box.png
-pca-with-6-components-data-individual-histograms-alpha-0.8.png
 pca-with-6-components-data-parallel-coordinates.png
-pca-with-6-components-data-scatter-matrix-hist-diagonal-alpha-0.8.png
-pca-with-6-components-data-scatter-matrix-kde-diagonal-alpha-0.8.png
-pca-with-6-components-data-stacked-histograms-alpha-0.8.png
 
-tsne-with-6-components-data-andrew-curves.png
 tsne-with-6-components-data-box.png
-tsne-with-6-components-data-individual-histograms-alpha-0.8.png
 tsne-with-6-components-data-parallel-coordinates.png
-tsne-with-6-components-data-scatter-matrix-hist-diagonal-alpha-0.8.png
-tsne-with-6-components-data-scatter-matrix-kde-diagonal-alpha-0.8.png
-tsne-with-6-components-data-stacked-histograms-alpha-0.8.png
 
 	From the Plots for the Andrew's Curves, Individual Histograms, Parallel Coordinates, it is possible to observe that the features extracted from Isomap and PCA methods, seems to show a high variance in the data points between classes, in opposition to what happens to the features extracted from the tSNE method, that shows a much lower variance between the data points extracted, between classes, which can give an intuition that the tSNE method to extract features in this problem, can be a not very useful approach.
 	This statement can be reforced by analysing also the Box Plots, which shows that the features extracted from the tSNE method have a very small range of values and can introduce too much outliers (i.e., noise), in comparison to the Isomap and PCA methods. 
